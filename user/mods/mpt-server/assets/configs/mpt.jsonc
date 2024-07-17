@@ -1,0 +1,11 @@
+{
+    "client": {
+        "useBtr": true,
+        "friendlyFire": false,
+        "dynamicVExfils": false,
+        "allowFreeCam": true
+    },
+    "server": {
+        "giftedItemsLoseFIR": false
+    }
+}

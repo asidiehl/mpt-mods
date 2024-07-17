@@ -1,0 +1,10 @@
+{
+  "Name": "3. Default Copy()",
+  "Description": "[Modified] Bots are difficult but fair, the way SAIN was meant to played.",
+  "Creator": "user",
+  "SAINVersion": "2.2.0",
+  "DateCreated": "04/28/2024 00:00:00",
+  "IsCustom": true,
+  "PresetCopiedFrom": "3. Default",
+  "CanEditName": true
+}

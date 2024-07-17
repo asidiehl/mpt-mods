@@ -1,0 +1,10 @@
+{
+    "static_loot_multiplier_enabled": true,
+    "static_loot_multiplier": 3,
+
+    "loose_loot_multiplier_enabled": true,
+    "loose_loot_multiplier": 3,
+
+    "spawnpoint_probability_enabled": true,
+    "item_distribution_enabled": true
+}
