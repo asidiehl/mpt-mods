@@ -8,7 +8,7 @@ This is a collection of mods used for my personal [SPTarkov](https://sp-tarkov.c
 3. If hosting your own server, extract `server.zip` to `user\mods` in your SPTarkov server directory
 4. Run the SPT Launcher, once you've connected to the server you should see `Active Server Mods: 11`
 
-## Mod List - 3.9.0
+## Mod List - 3.9.2
 
 * [Amands's Graphics](https://hub.sp-tarkov.com/files/file/813-amands-s-graphics/) v1.6.3
 * [BigBrain](https://hub.sp-tarkov.com/files/file/1219-bigbrain/) v1.0.0
@@ -24,5 +24,6 @@ This is a collection of mods used for my personal [SPTarkov](https://sp-tarkov.c
 * [Stash Search](https://hub.sp-tarkov.com/files/file/1769-stash-search/) v1.3.1
 * [SWAG + Donuts](https://hub.sp-tarkov.com/files/file/878-swag-donuts-dynamic-spawn-waves-and-custom-spawn-points/) v3.5.0
 * [That's Lit](https://hub.sp-tarkov.com/files/file/1453-that-s-lit-logical-ai-vision/) v1.390.02
+* [The Blacklist](https://hub.sp-tarkov.com/files/file/1012-the-blacklist-flea-market-enhancements) v2.0.1
 * [Unity Toolkit](https://hub.sp-tarkov.com/files/file/1976-unitytoolkit/) v1.0.1
 * [Waypoints](https://hub.sp-tarkov.com/files/file/1119-waypoints-expanded-navmesh/) v1.5.0
