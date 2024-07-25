@@ -18,7 +18,6 @@ This is a collection of mods used for my personal [SPTarkov](https://sp-tarkov.c
 * [More Checkmarks](https://hub.sp-tarkov.com/files/file/1159-morecheckmarks/) v1.5.14
 * [MPT Server](https://github.com/project-fika/Fika-Server) v2.0.0 (Server only)
 * [MPT.Core](https://github.com/project-fika/Fika-Plugin) v1.0.0
-* [Raid Review](https://hub.sp-tarkov.com/files/file/2037-raid-review/) v0.1.1_NEXT
 * [Questing Bots](https://hub.sp-tarkov.com/files/file/1534-questing-bots/) v0.5.0
 * [SAIN](https://hub.sp-tarkov.com/files/file/1062-sain-solarint-s-ai-modifications-full-ai-combat-system-replacement/) v3.0.5
 * [Stash Search](https://hub.sp-tarkov.com/files/file/1769-stash-search/) v1.3.1
