@@ -1,0 +1,28 @@
+name: Build & Publish
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Get version
+        run: echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
+      - name: Make build dir
+        run: mkdir -p _build
+      - name: Zip client mods
+        run: zip -r _build/client.zip BepinEx/plugins/
+      - name: Zip server mods
+        run: zip -r _build/server.zip user/mods/
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "_build/*.zip"
+          body: "MPT modpack release v${{ steps.getversion.outputs.version }}"
+          tag: "v${{ steps.getversion.outputs.version }}"
+          artifactErrorsFailBuild: true
+          generateReleaseNotes: true
