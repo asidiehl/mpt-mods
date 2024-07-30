@@ -11,7 +11,7 @@ This is a collection of mods used for my personal [SPTarkov](https://sp-tarkov.c
 ## Mod List - 3.9.2
 
 * [Amands's Graphics](https://hub.sp-tarkov.com/files/file/813-amands-s-graphics/) v1.6.3
-* [BigBrain](https://hub.sp-tarkov.com/files/file/1219-bigbrain/) v1.0.0
+* [BigBrain](https://hub.sp-tarkov.com/files/file/1219-bigbrain/) v1.0.1
 * [Bright Lasers](https://hub.sp-tarkov.com/files/file/1880-brightlasers/) v1.1.0 (Server only)
 * [Loot Value](https://hub.sp-tarkov.com/files/file/1606-lootvalue/) v3.0.1
 * [Looting Bots](https://hub.sp-tarkov.com/files/file/1096-looting-bots/) v1.3.5
@@ -24,4 +24,4 @@ This is a collection of mods used for my personal [SPTarkov](https://sp-tarkov.c
 * [That's Lit](https://hub.sp-tarkov.com/files/file/1453-that-s-lit-logical-ai-vision/) v1.390.02
 * [The Blacklist](https://hub.sp-tarkov.com/files/file/1012-the-blacklist-flea-market-enhancements) v2.0.1 (Server only)
 * [Unity Toolkit](https://hub.sp-tarkov.com/files/file/1976-unitytoolkit/) v1.0.1
-* [Waypoints](https://hub.sp-tarkov.com/files/file/1119-waypoints-expanded-navmesh/) v1.5.0
+* [Waypoints](https://hub.sp-tarkov.com/files/file/1119-waypoints-expanded-navmesh/) v1.5.1
