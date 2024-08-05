@@ -6,10 +6,11 @@ This is a collection of mods used for my personal [SPTarkov](https://sp-tarkov.c
 1. Download the latest [release] for the SPT version you want to run.
 2. Extract `client.zip` to `BepInEx\plugins` in your SPTarkov directory
 3. If hosting your own server, extract `server.zip` to `user\mods` in your SPTarkov server directory
-4. Run the SPT Launcher, once you've connected to the server you should see `Active Server Mods: 11`
+4. Run the SPT Launcher, once you've connected to the server you should see `Active Server Mods: 9`
 
 ## Mod List - 3.9.2
 
+* [Algorithmic Level Progression](https://hub.sp-tarkov.com/files/file/1400-alp-algorithmic-level-progression/) v5.1.1
 * [Amands's Graphics](https://hub.sp-tarkov.com/files/file/813-amands-s-graphics/) v1.6.3
 * [BigBrain](https://hub.sp-tarkov.com/files/file/1219-bigbrain/) v1.0.1
 * [Bright Lasers](https://hub.sp-tarkov.com/files/file/1880-brightlasers/) v1.1.0 (Server only)
@@ -19,7 +20,7 @@ This is a collection of mods used for my personal [SPTarkov](https://sp-tarkov.c
 * [MPT Server](https://github.com/project-fika/Fika-Server) v2.0.0 (Server only)
 * [MPT.Core](https://github.com/project-fika/Fika-Plugin) v1.0.0
 * [Questing Bots](https://hub.sp-tarkov.com/files/file/1534-questing-bots/) v0.7.0
-* [SAIN](https://hub.sp-tarkov.com/files/file/1062-sain-solarint-s-ai-modifications-full-ai-combat-system-replacement/) v3.0.5
+* [SAIN](https://hub.sp-tarkov.com/files/file/1062-sain-solarint-s-ai-modifications-full-ai-combat-system-replacement/) v3.1.0
 * [Stash Search](https://hub.sp-tarkov.com/files/file/1769-stash-search/) v1.3.1
 * [That's Lit](https://hub.sp-tarkov.com/files/file/1453-that-s-lit-logical-ai-vision/) v1.390.02
 * [The Blacklist](https://hub.sp-tarkov.com/files/file/1012-the-blacklist-flea-market-enhancements) v2.0.1 (Server only)
