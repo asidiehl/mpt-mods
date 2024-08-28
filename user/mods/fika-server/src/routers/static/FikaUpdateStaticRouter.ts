@@ -4,11 +4,11 @@ import { RouteAction, StaticRouter } from "@spt/di/Router";
 import { INullResponseData } from "@spt/models/eft/httpResponse/INullResponseData";
 
 import { FikaUpdateCallbacks } from "../../callbacks/FikaUpdateCallbacks";
+import { IFikaUpdateRaidAddPlayerData as IFikaUpdateAddPlayerData } from "../../models/fika/routes/raid/join/IFikaRaidAddPlayerData";
 import { IFikaUpdatePingRequestData } from "../../models/fika/routes/update/IFikaUpdatePingRequestData";
 import { IFikaUpdatePlayerspawnRequestData } from "../../models/fika/routes/update/IFikaUpdatePlayerspawnRequestData";
 import { IFikaUpdateSetStatusRequestData } from "../../models/fika/routes/update/IFikaUpdateSetStatusRequestData";
 import { IFikaUpdateSethostRequestData } from "../../models/fika/routes/update/IFikaUpdateSethostRequestData";
-import { IFikaUpdateSpawnpointRequestData } from "../../models/fika/routes/update/IFikaUpdateSpawnpointRequestData";
 
 @injectable()
 export class FikaUpdateStaticRouter extends StaticRouter {
@@ -16,9 +16,6 @@ export class FikaUpdateStaticRouter extends StaticRouter {
         super([
             new RouteAction("/fika/update/ping", async (url: string, info: IFikaUpdatePingRequestData, sessionID: string, _output: string): Promise<INullResponseData> => {
                 return this.fikaUpdateCallbacks.handlePing(url, info, sessionID);
-            }),
-            new RouteAction("/fika/update/spawnpoint", async (url: string, info: IFikaUpdateSpawnpointRequestData, sessionID: string, _output: string): Promise<INullResponseData> => {
-                return this.fikaUpdateCallbacks.handleSpawnpoint(url, info, sessionID);
             }),
             new RouteAction("/fika/update/playerspawn", async (url: string, info: IFikaUpdatePlayerspawnRequestData, sessionID: string, _output: string): Promise<INullResponseData> => {
                 return this.fikaUpdateCallbacks.handlePlayerspawn(url, info, sessionID);
@@ -28,6 +25,12 @@ export class FikaUpdateStaticRouter extends StaticRouter {
             }),
             new RouteAction("/fika/update/setstatus", async (url: string, info: IFikaUpdateSetStatusRequestData, sessionID: string, _output: string): Promise<INullResponseData> => {
                 return this.fikaUpdateCallbacks.handleSetStatus(url, info, sessionID);
+            }),
+            new RouteAction("/fika/update/addplayer", async (url: string, info: IFikaUpdateAddPlayerData, sessionID: string, _output: string): Promise<INullResponseData> => {
+                return this.fikaUpdateCallbacks.handleRaidAddPlayer(url, info, sessionID);
+            }),
+            new RouteAction("/fika/update/playerdied", async (url: string, info: IFikaUpdateAddPlayerData, sessionID: string, _output: string): Promise<INullResponseData> => {
+                return this.fikaUpdateCallbacks.handlePlayerDied(url, info, sessionID);
             }),
         ]);
     }
