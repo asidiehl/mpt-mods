@@ -1,10 +1,10 @@
 import { inject, injectable } from "tsyringe";
 
+import { IFikaUpdateRaidAddPlayerData } from "../models/fika/routes/raid/join/IFikaRaidAddPlayerData";
 import { IFikaUpdatePingRequestData } from "../models/fika/routes/update/IFikaUpdatePingRequestData";
 import { IFikaUpdatePlayerspawnRequestData } from "../models/fika/routes/update/IFikaUpdatePlayerspawnRequestData";
 import { IFikaUpdateSetStatusRequestData } from "../models/fika/routes/update/IFikaUpdateSetStatusRequestData";
 import { IFikaUpdateSethostRequestData } from "../models/fika/routes/update/IFikaUpdateSethostRequestData";
-import { IFikaUpdateSpawnpointRequestData } from "../models/fika/routes/update/IFikaUpdateSpawnpointRequestData";
 import { FikaMatchService } from "../services/FikaMatchService";
 
 @injectable()
@@ -22,14 +22,6 @@ export class FikaUpdateController {
     }
 
     /**
-     * Handle /fika/update/spawnpoint
-     * @param request
-     */
-    public handleSpawnpoint(request: IFikaUpdateSpawnpointRequestData): void {
-        this.fikaMatchService.setMatchSpawnPoint(request.serverId, request.name);
-    }
-
-    /**
      * Handle /fika/update/playerspawn
      * @param request
      */
@@ -42,7 +34,7 @@ export class FikaUpdateController {
      * @param request
      */
     public handleSethost(request: IFikaUpdateSethostRequestData): void {
-        this.fikaMatchService.setMatchHost(request.serverId, request.ips, request.port, request.natPunch);
+        this.fikaMatchService.setMatchHost(request.serverId, request.ips, request.port, request.natPunch, request.isDedicated);
     }
 
     /**
@@ -51,5 +43,23 @@ export class FikaUpdateController {
      */
     public handleSetStatus(request: IFikaUpdateSetStatusRequestData): void {
         this.fikaMatchService.setMatchStatus(request.serverId, request.status);
+    }
+
+    /**
+     * Handle /fika/update/addplayer
+     * @param request
+     * @returns
+     */
+    public handleRaidAddPlayer(request: IFikaUpdateRaidAddPlayerData): void {
+        this.fikaMatchService.addPlayerToMatch(request.serverId, request.profileId, { groupId: null, isDead: false });
+    }
+
+    /**
+     * Handle /fika/update/playerdied
+     * @param request
+     * @returns
+     */
+    public handleRaidPlayerDied(request: IFikaUpdateRaidAddPlayerData): void {
+        this.fikaMatchService.setPlayerDead(request.serverId, request.profileId);
     }
 }

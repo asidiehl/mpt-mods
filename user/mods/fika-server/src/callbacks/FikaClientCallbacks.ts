@@ -31,7 +31,12 @@ export class FikaClientCallbacks {
     }
 
     /** Handle /fika/profile/download */
-    public handleProfileDownload(_url: string, info: any, sessionID: string): any {
+    public handleProfileDownload(_url: string, _info: any, sessionID: string): any {
         return this.httpResponseUtil.noBody(this.fikaClientController.handleProfileDownload(sessionID));
+    }
+
+    /** Handle /fika/client/check/version */
+    public handleVersionCheck(_url: string, _info: any, _sessionID: string): any {
+        return this.httpResponseUtil.noBody(this.fikaClientController.handleVersionCheck());
     }
 }

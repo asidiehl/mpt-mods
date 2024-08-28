@@ -4,6 +4,7 @@
         "friendlyFire": true,
         "dynamicVExfils": false,
         "allowFreeCam": false,
+        "allowSpectateFreeCam": false,
         "allowItemSending": true,
         "blacklistedItems": [],
         "forceSaveOnDeath": false,
@@ -25,5 +26,18 @@
         "enable": false,
         "port": 6790,
         "natIntroduceAmount": 1
+    },
+    "dedicated": {
+        "profiles": {
+            "amount": 0
+        },
+        "scripts": {
+            "generate": true,
+            "forceIp": ""
+        }
+    },
+    "background": {
+        "enable": true,
+        "easteregg": false
     }
 }
