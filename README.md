@@ -11,6 +11,7 @@ This is a collection of mods used for my personal [SPTarkov](https://sp-tarkov.c
 ## Mod List - 3.9.2
 
 * [Algorithmic Level Progression](https://hub.sp-tarkov.com/files/file/1400-alp-algorithmic-level-progression/) v5.1.1
+* [All The Seasons](https://hub.sp-tarkov.com/files/file/2052-all-the-seasons/) v1.1.0
 * [Amands's Graphics](https://hub.sp-tarkov.com/files/file/813-amands-s-graphics/) v1.6.3
 * [BigBrain](https://hub.sp-tarkov.com/files/file/1219-bigbrain/) v1.0.1
 * [Bright Lasers](https://hub.sp-tarkov.com/files/file/1880-brightlasers/) v1.1.0 (Server only)
@@ -19,6 +20,7 @@ This is a collection of mods used for my personal [SPTarkov](https://sp-tarkov.c
 * [More Checkmarks](https://hub.sp-tarkov.com/files/file/1159-morecheckmarks/) v1.5.14
 * [MPT Server](https://github.com/project-fika/Fika-Server) v2.2.8 (Server only)
 * [MPT.Core](https://github.com/project-fika/Fika-Plugin) v0.9.9003
+* [Open Extract](https://hub.sp-tarkov.com/files/file/827-open-extract/) v1.5.0
 * [Questing Bots](https://hub.sp-tarkov.com/files/file/1534-questing-bots/) v0.7.0
 * [SAIN](https://hub.sp-tarkov.com/files/file/1062-sain-solarint-s-ai-modifications-full-ai-combat-system-replacement/) v3.1.0
 * [Stash Search](https://hub.sp-tarkov.com/files/file/1769-stash-search/) v1.3.1
