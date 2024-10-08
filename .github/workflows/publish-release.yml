@@ -30,3 +30,9 @@ jobs:
           tag: "v${{ steps.getversion.outputs.version }}"
           artifactErrorsFailBuild: true
           generateReleaseNotes: true
+      - name: Discord notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@master
+        with:
+          args: 'Modpack update v${{ steps.getversion.outputs.version }} released & available to download [here](https://github.com/{{ EVENT_PAYLOAD.repository.full_name }}/releases/tag/v${{ steps.getversion.outputs.version }})!'
