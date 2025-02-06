@@ -37,40 +37,110 @@ export class globalValues {
   public static originalWeighting: EquipmentFilters;
   public static configServer: ConfigServer;
 
-  public static updateInventory(currentLevel: number) {
+  public static updateInventory(
+    currentLevel: number,
+    location: keyof typeof advancedConfig.locations
+  ) {
+    const items = this.tables.templates.items;
     const nameList = Object.keys(this.storedEquipmentValues);
     if (!nameList.length || !currentLevel) return;
     const botConfig = this.configServer.getConfig<IBotConfig>(ConfigTypes.BOT);
-    nameList.forEach((name) => {
-      const currentLevelIndex = this.storedEquipmentValues[name].findIndex(
+    const firstPrimaryWeaponMultiplier =
+      advancedConfig.locations[location].weightingAdjustments
+        .FirstPrimaryWeapon;
+
+    nameList.forEach((botName) => {
+      const copiedInventory = cloneDeep(
+        this.originalBotTypes[botName].inventory
+      );
+
+      const currentLevelIndex = this.storedEquipmentValues[botName].findIndex(
         ({ levelRange: { min, max } }) =>
           currentLevel <= max && currentLevel >= min
       );
+
       const weightingToUpdate =
-        this.storedEquipmentValues[name][currentLevelIndex];
+        this.storedEquipmentValues[botName][currentLevelIndex];
 
-      const botInventory = this.tables.bots.types[name].inventory;
-
-      for (const caliber in weightingToUpdate.ammo) {
-        mergeDeep(botInventory.Ammo[caliber], weightingToUpdate.ammo[caliber]);
+      if (!weightingToUpdate) return;
+      if (weightingToUpdate?.ammo) {
+        for (const caliber in weightingToUpdate.ammo) {
+          copiedInventory.Ammo[caliber] = {
+            ...copiedInventory.Ammo[caliber],
+            ...weightingToUpdate.ammo[caliber],
+          };
+        }
       }
 
-      for (const equipmentType in weightingToUpdate.equipment) {
-        mergeDeep(
-          botInventory.equipment[equipmentType],
-          weightingToUpdate.equipment[equipmentType]
+      if (weightingToUpdate?.equipment) {
+        for (const equipmentType in weightingToUpdate.equipment) {
+          copiedInventory.equipment[equipmentType] = {
+            ...copiedInventory.equipment[equipmentType],
+            ...weightingToUpdate.equipment[equipmentType],
+          };
+          try {
+            //update weapon type weightings per map here
+            if (
+              equipmentType === "FirstPrimaryWeapon" &&
+              botName !== "marksman"
+            ) {
+              // console.log("Updating", botName, " weapons for map", location);
+              const firstPrimary: Record<string, number> = cloneDeep(
+                copiedInventory.equipment[equipmentType]
+              );
+
+              const firstPrimaryKeys = Object.keys(firstPrimary);
+              firstPrimaryKeys?.forEach((weaponId) => {
+                const parentId = items[weaponId]?._parent;
+                const parent = items?.[parentId]?._name;
+                if (parent && firstPrimaryWeaponMultiplier[parent]) {
+                  const multiplier =
+                    (firstPrimaryWeaponMultiplier[parent] - 1) / 2 + 1;
+
+                  copiedInventory.equipment[equipmentType][weaponId] =
+                    Math.round(multiplier * firstPrimary[weaponId]);
+
+                  // if (botName === "assault") {
+                  //   console.log(
+                  //     multiplier,
+                  //     location,
+                  //     botName,
+                  //     firstPrimary[weaponId],
+                  //     " to ",
+                  //     copiedInventory.equipment[equipmentType][weaponId],
+                  //     parent,
+                  //     items[weaponId]._name
+                  //   );
+                  // }
+                } else {
+                  console.log(
+                    `[AlgorithmicLevelProgression]: Unable to set map settings for bot ${botName}'s item ${items[weaponId]._name} - ${weaponId} `
+                  );
+                }
+              });
+            }
+          } catch (error) {
+            `[AlgorithmicLevelProgression]: Failed to update bot ${botName}'s ${equipmentType}`;
+          }
+        }
+
+        if (botName === "assault") {
+          //adjust randomization
+          buffScavGearAsLevel(botConfig.equipment[botName], currentLevelIndex);
+        }
+
+        setPlateWeightings(
+          botName,
+          botConfig.equipment[botName],
+          currentLevelIndex
         );
+
+        // if (botName === "assault") {
+        //   saveToFile(this.tables.bots.types[botName], `refDBS/assault.json`);
+        // }
       }
-      if (name === "assault") {
-        buffScavGearAsLevel(botConfig.equipment[name], currentLevelIndex);
-      }
-      setPlateWeightings(
-        name,
-        botConfig.equipment[name],
-        currentLevelIndex,
-        botInventory,
-        this.tables.templates.items
-      );
+
+      this.tables.bots.types[botName].inventory = copiedInventory;
     });
   }
 
@@ -104,7 +174,7 @@ export class globalValues {
         `Algorthimic LevelProgression: 'originalWeighting' was not set correctly`
       );
     }
-    
+
     if (!items) {
       return this.Logger.error(
         `Algorthimic LevelProgression: 'items' was not set correctly`

@@ -248,6 +248,18 @@ export default [
   "653931da5db71d30ab1d6296", // GBRS Aimpoint Hydra Mount Kit (FDE)
   "618b9682a3884f56c957ca78", //Reptilia ROF-90 RMR mount for Geissele scope mounts
   "618ba92152ecee1505530bd3", //Reptilia ROF-90 RMR mount for Geissele scope mounts ddc
+  "6601546f86889319850bd566",
+  "66015072e9f84d5680039678",
+  "66015dc4aaad2f54cb04c56a",
+  "5d70e500a4b9364de70d38ce",
+
+  "670e8eab8c1bb0e5a7075acf", //mag_pm_izhmeh_9x18pm_999_infectedMagazin
+  "671d85439ae8365d69117ba6", //mag_tt_toz_std_762x25tt_999_infectedMagazin
+  "671d8617a3e45c1f5908278c", //mag_mp443_izhmeh_std_9x19_999_infectedMagazin
+  "671d8ac8a3e45c1f59082799", //mag_glock_glock_w_pad_9x19_999_fde_Infected
+  "671d8b38b769f0d88c0950f8", //mag_m1911_colt_m45a1_std_1143x23_999_infected
+  "671d8b8c0959c721a50ca838", //mag_usp_hk_usp_tactical_1143x23_999_infected
+  "628120f210e26c1f344e6558", // mxc broken mod
 ];
 
 //5d0a29fed7ad1a002769ad08

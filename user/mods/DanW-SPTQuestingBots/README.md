@@ -5,12 +5,16 @@ You're no longer the only PMC running around placing markers and collecting ques
 **---------- Mod Compatibility ----------**
 
 **REQUIRES:**
-* [BigBrain](https://hub.sp-tarkov.com/files/file/1219-bigbrain/)
-* [Waypoints](https://hub.sp-tarkov.com/files/file/1119-waypoints-expanded-bot-patrols-and-navmesh/)
+* [BigBrain](https://hub.sp-tarkov.com/files/file/1219-bigbrain/) (1.2.0 or later)
+* [Waypoints](https://hub.sp-tarkov.com/files/file/1119-waypoints-expanded-bot-patrols-and-navmesh/) (1.6.2 or later)
 
 **Highly Recommended:**
-* [SAIN](https://hub.sp-tarkov.com/files/file/1062-sain-2-0-solarint-s-ai-modifications-full-ai-combat-system-replacement/) (3.0.4 or later recommended)
-* [Looting Bots](https://hub.sp-tarkov.com/files/file/1096-looting-bots/) (1.3.5 or later recommended)
+* [SAIN](https://hub.sp-tarkov.com/files/file/1062-sain-2-0-solarint-s-ai-modifications-full-ai-combat-system-replacement/) (3.2.0 or later recommended)
+* [Looting Bots](https://hub.sp-tarkov.com/files/file/1096-looting-bots/) (1.4.0 or later recommended)
+
+**Partially compatible with:**
+* [Realism](https://hub.sp-tarkov.com/files/file/606-spt-realism-mod/) (You must disable Realism's bot-spawning changes when using the Questing Bots spawning system)
+* [Please Just Fight](https://hub.sp-tarkov.com/files/file/2652-please-just-fight/) (This mod should only be used if you're not using the Questing Bots spawning system)
 
 **NOT compatible with:**
 * [AI Limit](https://hub.sp-tarkov.com/files/file/793-ai-limit/) or any other mods that disable AI in a similar manner. This mod relies on the AI being active throughout the entire map. **Starting with 0.2.10, Questing Bots has its own AI Limiter feature.** Please see the tab below for more information.
@@ -18,13 +22,15 @@ You're no longer the only PMC running around placing markers and collecting ques
 
 **Compatible with:**
 * [SWAG + DONUTS](https://hub.sp-tarkov.com/files/file/878-swag-donuts-dynamic-spawn-waves-and-custom-spawn-points/)
-* [Late to the Party](https://hub.sp-tarkov.com/files/file/1099-late-to-the-party/) (if **bot_spawns.enabled=true** in this mod, ensure **adjust_bot_spawn_chances.adjust_pmc_conversion_chances=false** in LTTP)
+* [Late to the Party](https://hub.sp-tarkov.com/files/file/1099-late-to-the-party/)
+* [Performance Improvements](https://hub.sp-tarkov.com/files/file/2505-performance-improvements/) (Must be version 0.2.4 or newer)
 * **Fika** (Requires client version 0.9.8962.33287 or later)
 
 **NOTE: Please disable the bot-spawning system in this mod if you're using other mods that manage spawning! Otherwise, there will be too many bots on the map. The bot-spawning system in this mod will be automatically disabled** if any of the following mods are detected:
 * [SWAG + DONUTS](https://hub.sp-tarkov.com/files/file/878-swag-donuts-dynamic-spawn-waves-and-custom-spawn-points/)
 * [MOAR](https://hub.sp-tarkov.com/files/file/1059-moar-bots-spawning-difficulty/)
 * [Better Spawns Plus](https://hub.sp-tarkov.com/files/file/1002-better-spawns-plus/)
+* [Reality](https://hub.sp-tarkov.com/files/file/2585-reality/)
 
 **---------- Overview ----------**
 
@@ -99,6 +105,17 @@ The three major data structures are:
     * **maxTimeOnQuest**: The maximum time (in seconds) that a bot is allowed to continue doing the quest after it completes at least one of its objectives. This is intended to add more variety to bot questing instead of having them stay in one area for a long period of time. By default, this is 300 seconds.
     * **canRunBetweenObjectives**: Boolean indicating if bots are allowed to sprint to the next objective in the quest after it completes at least one objective. This is intended to be used in areas where stealth is more important (typically in buildings). This is **true** by default. 
     * **requiredSwitches**: A dictionary of the switches that must be in a specific position bot bots to perform the quest. The dictionary key is the ID of the switch, and the value is a boolean indicating if the switch must be open (actuated). If the dictionary is empty, no switches will be checked. 
+    * **forbiddenWeapons**: An array of weapon classes that cannot be used to perform this quest. In order for the bot to perform the quest, it must have at least one weapon that is not in the weapon classes listed in the array. The only available options for the array elements are (case-sensitive):
+        * assaultCarbine
+        * assaultRifle
+        * grenadeLauncher
+        * machinegun
+        * marksmanRifle
+        * pistol
+        * shotgun
+        * smg
+        * sniperRifle
+        * specialWeapon
     * **name**: The name of the quest. This doesn't have to be unique, but it's best if it is to avoid confusion when troubleshooting.
     * **waypoints**: An array of waypoints that can be used to assist bots with finding paths to the quest's objectives. Each waypoint is an (x, y, z) coordinate. 
     * **objectives**: An array of the objectives in the quest. Bots can complete objectives in any order. 
@@ -165,12 +182,8 @@ Since normal AI Limit mods will disable bots that are questing (which will preve
 **Main Options:**
 * **enabled**: Completely enable or disable all featues of this mod. 
 * **debug.enabled**: Enable debug mode.
-* **debug.scav_cooldown_time**: Cooldown timer (in seconds) after a Scav raid ends before you're allowed to start another one. This is **1500** by default, which is the same as the base game.
-* **debug.full_length_scav_raids**: If **true**, Scav raids will always be full-length. 
-* **debug.free_labs_access**: If **true**, Labs cards are no longer required to enter Labs, and you're also allowed to do Scav runs in Labs. 
 * **debug.always_spawn_pmcs**: If **true**, PMC's will spawn even when you select "None" for the amount of bots when starting a raid. 
 * **debug.always_spawn_pscavs**: If **true**, player Scavs will spawn even when you select "None" for the amount of bots when starting a raid. 
-* **debug.always_have_airdrops**: If **true**, an airdrop will appear at the beginning of all raids for applicable maps
 * **debug.show_zone_outlines**: If **true**, EFT quest zones will be outlined in light blue. Target locations for each zone will have light-blue spherical outlines.
 * **debug.show_failed_paths**: If **true**, whenever a bot gets stuck its target path will be drawn in red. 
 * **debug.show_door_interaction_test_points**: If **true**, the positions tested when determining where bots should travel to unlock doors will have spherical outlines. If the a valid NavMesh position cannot be found for the test point, the outline color will be white. If a valid NavMesh position is found but the bot cannot access that point, the outline color will be yellow. If a valid NavMesh position is found and the bot can access that point, the outline color will be magenta. The position selected for the bot will be shown with a green outline. 
@@ -193,6 +206,11 @@ Since normal AI Limit mods will disable bots that are questing (which will preve
 * **questing.allowed_bot_types_for_questing.min/max**: The minimum and maximum time (in seconds) that a bot will wait after ending combat before it's allowed to quest again. After the bot is no longer actively engaged in combat, it will continue its quest following a random delay between these two values. This is to allow the bot to search for threats before blindly running toward its objective. 
 * **questing.stuck_bot_detection.distance**: The minimum distance (in meters) the bot must travel over a period of **questing.stuck_bot_detection.time** seconds while questing or the mod will assume it's stuck. This is **2** m by default.
 * **questing.stuck_bot_detection.time**: The maximum time (in seconds) the bot is allowed to move less than **questing.stuck_bot_detection.distance** meters while questing or the mod will assume it's stuck. This is **20** s by default.
+* **questing.stuck_bot_detection.stuck_bot_remedies.enabled**: If bots will try jumping or vaulting if they get stuck while questing (until they get stuck for **questing.stuck_bot_detection.time** or more seconds). This is **true** by default. 
+* **questing.stuck_bot_detection.stuck_bot_remedies.min_time_before_jumping**: The minimum time (in seconds) the bot is allowed to move less than **questing.stuck_bot_detection.distance** meters while questing before it will try jumping to prevent itself from being stuck. This is **6** s by default.
+* **questing.stuck_bot_detection.stuck_bot_remedies.jump_debounce_time**: The minimum time (in seconds) between a bot's jump attempts to prevent itself from being stuck. This is **4** s by default. 
+* **questing.stuck_bot_detection.stuck_bot_remedies.min_time_before_vaulting**: The minimum time (in seconds) the bot is allowed to move less than **questing.stuck_bot_detection.distance** meters while questing before it will try vaulting to prevent itself from being stuck. This is **8** s by default.
+* **questing.stuck_bot_detection.stuck_bot_remedies.vault_debounce_time**: The minimum time (in seconds) between a bot's vault attempts to prevent itself from being stuck. This is **4** s by default. 
 * **questing.stuck_bot_detection.max_count**: The maximum number of times the bot can be stuck before questing is completely disabled for it. This counter is reset whenever the bot completes an objective. Whenever the bot is assumed to be stuck, a new objective will be selected for it to force it to generate a different path. This is **8** by default. 
 * **questing.stuck_bot_detection.follower_break_time**: If a boss follower is stuck while trying to follow it, it will take a break for this many seconds (**10** by default).
 * **questing.stuck_bot_detection.max_not_able_bodied_time**: If a bot is continuously not able-bodied (typically due to injuries) for this amount of time (in seconds), it will be separated from its group. If it's the boss of its group, a new boss will be selected for that group. This timer is paused when a bot is either in combat or hears suspicious noises. This is **120** s by default. 
@@ -249,7 +267,7 @@ Since normal AI Limit mods will disable bots that are questing (which will preve
 * **questing.bot_questing_requirements.break_for_looting.max_time_to_start_looting**: The duration of each break (in seconds). If one of the [Looting Bots](https://hub.sp-tarkov.com/files/file/1096-looting-bots/) brain layers is not active after this time, the bot will resume questing. This is **2** s by default. 
 * **questing.bot_questing_requirements.break_for_looting.max_loot_scan_time**: The maximum time that bots will be allowed to search for loot via [Looting Bots](https://hub.sp-tarkov.com/files/file/1096-looting-bots/). If the bot hasn't found any loot within this time, it will continue questing. If it has found loot, it will not continue questing until it's completely finished with looting. This is **4** s by default. 
 * **questing.bot_questing_requirements.break_for_looting.max_distance_from_boss**: The maximum distance (in meters) that a follower will be allowed to travel from its boss while looting. If the follower exceeds this distance, it will be forced to stop looting and regroup. This is **75** m by default. 
-* **questing.bot_questing_requirements.break_for_looting.max_sain_version_for_resetting_decisions**: A string defining the maximum version of [SAIN](https://hub.sp-tarkov.com/files/file/1062-sain-2-0-solarint-s-ai-modifications-full-ai-combat-system-replacement/) that still requires bots' decisions to be reset when instructing them to loot. Otherwise, they will get stuck in SAIN's combat layers instead of looting for an extended period of time. This is "2.2.1.99" by default. 
+* **questing.bot_questing_requirements.break_for_looting.max_sain_version_for_resetting_decisions**: A string defining the maximum version of [SAIN](https://hub.sp-tarkov.com/files/file/1062-sain-2-0-solarint-s-ai-modifications-full-ai-combat-system-replacement/) that still requires bots' decisions to be reset when instructing them to loot. Otherwise, they will get stuck in SAIN's combat layers instead of looting for an extended period of time. This is **"2.2.1.99"** by default. **Do not change this unless you know what you're doing!**
 * **questing.bot_questing_requirements.max_follower_distance.max_wait_time**: The maximum time (in seconds) that a bot's followers are allowed to be too far from it before it will stop questing and regroup. This is **5** s by default. 
 * **questing.bot_questing_requirements.max_follower_distance.min_regroup_time**: The minimum time (in seconds) that a bot will be forced to regroup with its followers if it's too far from them. After this time, the bot will be allowed to patrol its area instead. This is **1** s by default. 
 * **questing.bot_questing_requirements.max_follower_distance.regroup_pause_time**: When a boss reaches its nearest follower while regrouping, it will stop regrouping for this amount of time (in seconds). After that delay, it will continue regrouping if required, or it will continue questing. This delay is to prevent bosses from standing completely still while waiting for the rest of their followers to regroup. This is **2** s by default. 
@@ -280,6 +298,8 @@ Since normal AI Limit mods will disable bots that are questing (which will preve
 * **questing.bot_quests.blacklisted_boss_hunter_bosses**: An array containing the names of bosses that bots doing the "Boss Hunter" quest will not be allowed to hunt.
 * **questing.bot_quests.airdrop_bot_interest_time**: The time (in seconds) after an airdop lands during which bots can go to it via an "Airdrop Chaser" quest. This is **420** s by default. 
 * **questing.bot_quests.elimination_quest_search_time**: The time (in seconds) a bot will wait before selecting another quest after reaching each objective in an elimination EFT quest. This is **60** s by default. 
+* **questing.bot_quests.lightkeeper_island_quests.enabled**: If bots are able to perform quests on Lightkeeper Island. This is **true** by default.
+* **questing.bot_quests.lightkeeper_island_quests.min_sain_version**: If [SAIN](https://hub.sp-tarkov.com/files/file/1062-sain-2-0-solarint-s-ai-modifications-full-ai-combat-system-replacement/) is loaded, it must be at least this version for bots to be able to perform Lightkeeper quests. If [SAIN](https://hub.sp-tarkov.com/files/file/1062-sain-2-0-solarint-s-ai-modifications-full-ai-combat-system-replacement/) is below this version, bots may not respect alliance changes correct when they enter/exit the bridge. This is **"3.1.0.99"** by default. **Do not change this unless you know what you're doing!**
 * **questing.bot_quests.eft_quests.xxx**: The settings to apply to all quests based on EFT's quests. 
 * **questing.bot_quests.spawn_rush.xxx**: The settings to apply to the "Spawn Rush" quest. 
 * **questing.bot_quests.spawn_point_wander.xxx**: The settings to apply to the "Spawn Point Wandering" quest.
@@ -319,6 +339,11 @@ Since normal AI Limit mods will disable bots that are questing (which will preve
 * **bot_spawns.limit_initial_boss_spawns.max_initial_bosses**: The maximum number of bosses that are allowed to spawn at the beginning of the raid (including Raiders and Rogues). After this number is reached, all remaining initial boss spawns will be canceled. If this number is too high, few Scavs will be able to spawn after the initial PMC spawns. This is **14** by default. 
 * **bot_spawns.limit_initial_boss_spawns.max_initial_rogues**: The maximum number of Rogues that are allowed to spawn at the beginning of the raid. After this number is reached, all remaining initial Rogue spawns will be canceled. If this number is too high, few Scavs will be able to spawn after the initial PMC spawns. This is **10** by default. 
 * **bot_spawns.max_alive_bots**: The maximum number of PMC's and player Scavs (combined) that can be alive at the same time on each map. This only applies to PMC's and player Scavs generated by this mod; it doesn't apply to bots spawned by other mods or for Scavs converted to PMC's or player Scavs automatically by SPT. 
+* **bot_spawns.pmc_hostility_adjustments.enabled**: If this mod should override EFT's hostility chances for PMC bots. This is **true** by default.
+* **bot_spawns.pmc_hostility_adjustments.pmcs_always_hostile_against_pmcs**: Makes PMC's always hostile against other PMC's. This is **true** by default.
+* **bot_spawns.pmc_hostility_adjustments.pmcs_always_hostile_against_scavs**: Makes PMC's always hostile against Scavs and vice versa. This is **true** by default.
+* **bot_spawns.pmc_hostility_adjustments.global_scav_enemy_chance**: Sets the global chance that PMC's will be hostile toward Scavs. However, EFT does not use this setting in many maps. This is **100** by default.
+* **bot_spawns.pmc_hostility_adjustments.pmc_enemy_roles**: Makes PMC's always hostile toward bots with these roles. 
 * **bot_spawns.pmcs.xxx**: The settings to apply to PMC spawns (see below for details).
 * **bot_spawns.player_scavs.xxx**: The settings to apply to player Scav spawns (see below for details).
 * **adjust_pscav_chance.enabled**: If the chances that Scavs are converted to player Scavs should be adjusted throughout the raid. This is only used if **bot_spawns.enabled=false** or **bot_spawns.player_scavs.enabled=false**, and it is **true** by default.
@@ -349,7 +374,7 @@ Since normal AI Limit mods will disable bots that are questing (which will preve
 * Bots take the most direct path to their objectives, which may involve running in the middle of an open area without any cover.
 * Certain bot "brains" stay in a combat state for a long time, during which they're unable to continue their quests.
 * Certain bot "brains" are blacklisted because they cause the bot to always be in a combat state and therefore never quest (i.e. exUSEC's when they're near a stationary weapon)
-* Bots sometimes unlock doors for no reason if they can't properly resolve their quest locations. Examples include marking the tanker at New Gas in Customs; bots will fail to find a position to mark the tanker and then nearby unlock rooms in New Gas for no reason.
+* Bots sometimes unlock doors for no reason if they can't properly resolve their quest locations.
 * A *"Destroying GameObjects immediately is not permitted during physics trigger/contact, animation event callbacks or OnValidate. You must use Destroy instead."* error will sometimes appear in the game console after a bot unlocks a door. This can be ignored. 
 * Player-level ranges for some quests are not reasonable, so bots may do late-game quests at low player levels and vice versa. This is because EFT has no minimum level defined for several quest lines.
 
@@ -361,26 +386,12 @@ Since normal AI Limit mods will disable bots that are questing (which will preve
 * Noticeable stuttering for (possibly) several seconds when the initial PMC wave spawns if your **max_alive_bots** setting is high
 * Performance may be worse if **advanced_eft_bot_count_management.enabled=true** because EFT may be allowed to spawn more Scavs than with previous versions of this mod.
 
-**---------- Roadmap (Expect Similar Accuracy to EFT's) ----------**
-
-* **0.7.1** (ETA: Late July)
-    * Improvements with how Questing Bots interacts with SAIN:
-        * Ability to have bots avoid quests in dangerous areas of the map
-    * Add the ability to require certain weapon classes for quests (i.e. do not allow a bot with only a pistol to perform a sniping quest)
-* **0.8.0** (ETA: Early September)
-    * Separate spawning system into a separate mod
-* **Backlog**
-    * Move initial quest-data generation to the server to protect for mods that add lots of quests (like QuestManiac)
-    * Add new quest type: hidden-stash running
-    * Add new quest type: blood-thirsty cheater (will be disabled by default)
-* **Not Planned**
-    * Add waypoints to have PMC's path around dangerous spots in the map or in very open areas
-
 **---------- Credits ----------**
 
 * Thanks to [Props](https://hub.sp-tarkov.com/user/18746-props/) for sharing the code [DONUTS](https://hub.sp-tarkov.com/files/file/878-swag-donuts-dynamic-spawn-waves-and-custom-spawn-points/) uses to spawn bots. This was the inspiration to create this mod. 
 * Thanks to [DrakiaXYZ](https://hub.sp-tarkov.com/user/30839-drakiaxyz/) for creating [BigBrain](https://hub.sp-tarkov.com/files/file/1219-bigbrain/) and [Waypoints](https://hub.sp-tarkov.com/files/file/1119-waypoints-expanded-bot-patrols-and-navmesh/) and for all of your help with developing this mod. Also, thanks for your help with adding interop capability to [SAIN](https://hub.sp-tarkov.com/files/file/1062-sain-2-0-solarint-s-ai-modifications-full-ai-combat-system-replacement/).
 * Thanks to [nooky](https://hub.sp-tarkov.com/user/29062-nooky/) for lots of help with testing and ensuring this mod remains compatible with [SWAG + DONUTS](https://hub.sp-tarkov.com/files/file/878-swag-donuts-dynamic-spawn-waves-and-custom-spawn-points/). 
 * Thanks to [Skwizzy](https://hub.sp-tarkov.com/user/31303-skwizzy/) for help with adding interop capability to [Looting Bots](https://hub.sp-tarkov.com/files/file/1096-looting-bots/).
+* Thanks to [Solarint](https://hub.sp-tarkov.com/user/30697-solarint/) for help with improving interop capability to [SAIN](https://hub.sp-tarkov.com/files/file/1062-sain-2-0-solarint-s-ai-modifications-full-ai-combat-system-replacement/) and working with me to balance bot questing vs. combat behavior.
 * Thanks to everyone else on Discord who helped to test the many alpha releases of this mod and provided feedback to make it better. There are too many people to name, but you're all awesome. 
 * Of course, thanks to the SPT development team who made this possible in the first place. 

@@ -1,79 +1,166 @@
-import { Equipment, Inventory } from "@spt/models/eft/common/tables/IBotType";
+import {
+  IEquipment,
+  IInventory,
+  IMods,
+} from "@spt/models/eft/common/tables/IBotType";
 import { EquipmentFilters } from "@spt/models/spt/config/IBotConfig";
 import {
   armorParent,
+  blacklistedItems,
   checkParentRecursive,
   cloneDeep,
+  deleteBlacklistedItemsFromInventory,
   getAmmoWeighting,
   getArmorRating,
   getBackPackInternalGridValue,
   getTacticalVestValue,
   getWeaponWeighting,
   headwearParent,
-  mergeDeep,
   rigParent,
   saveToFile,
+  weaponTypeNameToId,
 } from "../LoadoutChanges/utils";
 import { ITemplateItem } from "@spt/models/eft/common/tables/ITemplateItem";
 import advancedConfig from "../../config/advancedConfig.json";
 import nonPmcBotConfig from "../../config/nonPmcBotConfig.json";
-import Armor from "../Constants/Armor";
-import Helmets from "../Constants/Helmets";
-import Vests from "../Constants/Vests";
-import Ammo from "../Constants/Ammo";
 import { MinMax } from "@spt/models/common/MinMax";
-import Backpacks from "../Constants/Backpacks";
+import { inventory as cachedInventory } from "../Cache/tablesbotstypesusec.json";
+import { weightingAdjustmentsByBotLevel as botWeights } from "../Cache/botConfigequipmentpmc.json";
+import tieredItems from "../Constants/tieredItems.json";
+import mappedPresets from "../Constants/mappedPresets.json";
+import { IPreset } from "@spt/models/eft/common/IGlobals";
+
+const objectToOrderedList = (
+  equipment: Record<string, number>,
+  items: Record<string, ITemplateItem>
+) =>
+  Object.keys(equipment)
+    .sort((a, b) => equipment[a] - equipment[b])
+    .map((id) => ({ id, value: equipment[id], name: items[id]._name }));
+
+const blackList = new Set<string>([
+  "5e4abc6786f77406812bd572",
+  "628bc7fb408e2b2e9c0801b1",
+  "5b3b713c5acfc4330140bd8d",
+  "5e997f0b86f7741ac73993e2",
+  "5c0126f40db834002a125382",
+  "601948682627df266209af05",
+  "63495c500c297e20065a08b1",
+  "59ef13ca86f77445fd0e2483",
+  "670e8eab8c1bb0e5a7075acf", //mag_pm_izhmeh_9x18pm_999_infectedMagazin
+  "671d85439ae8365d69117ba6", //mag_tt_toz_std_762x25tt_999_infectedMagazin
+  "671d8617a3e45c1f5908278c", //mag_mp443_izhmeh_std_9x19_999_infectedMagazin
+  "671d8ac8a3e45c1f59082799", //mag_glock_glock_w_pad_9x19_999_fde_Infected
+  "671d8b38b769f0d88c0950f8", //mag_m1911_colt_m45a1_std_1143x23_999_infected
+  "671d8b8c0959c721a50ca838", //mag_usp_hk_usp_tactical_1143x23_999_infected
+  "628120f210e26c1f344e6558", // mxc broken mag
+]);
+
+const makeRare = new Set<string>([
+  "6038b4ca92ec1c3103795a0d",
+  "6038b4b292ec1c3103795a0b",
+  "5fd4c474dd870108a754b241",
+  "628b9c7d45122232a872358f",
+  "628baf0b967de16aab5a4f36",
+  "628b9784bcf6e2659e09b8a2",
+  "628baf0b967de16aab5a4f36",
+  "5c0e541586f7747fa54205c9",
+  "5bffdd7e0db834001b734a1a",
+]);
+
+export const buldTieredItemTypes = (items: Record<string, ITemplateItem>) => {
+  const result = {};
+
+  botWeights.forEach((weight, index) => {
+    if (index < 4)
+      // Prevents boss related gear appearing on normal bots
+      for (const key in weight.equipment.edit) {
+        Object.keys(weight.equipment.edit[key]).forEach((id) => {
+          if (blackList.has(id)) return;
+          if (!result[key]) result[key] = {};
+
+          result[key][id] = Math.max(
+            result[key][id] || 1,
+            weight.equipment.edit[key][id]
+          );
+        });
+      }
+  });
+
+  for (const key in result) {
+    for (const id in result[key]) {
+      if (makeRare.has(id)) {
+        result[key][id] = result[key][id] * 3;
+      }
+    }
+  }
+
+  for (const key in result) {
+    const equipmentSet = result[key] as Record<string, number>;
+    result[key] = objectToOrderedList(equipmentSet, items);
+  }
+
+  // AMMO
+  const ammo = {};
+
+  for (const caliber in cachedInventory.Ammo) {
+    for (const ammoId in cachedInventory.Ammo[caliber]) {
+      if (items[ammoId]) {
+        ammo[ammoId] = getAmmoWeighting(items[ammoId]);
+      }
+    }
+  }
+
+  result["Ammo"] = objectToOrderedList(ammo, items);
+
+  const map = {};
+
+  for (const key in result) {
+    result[key].forEach(({ id, value }) => {
+      map[id] = value;
+    });
+  }
+
+  result["mapper"] = map;
+
+  return result;
+};
 
 export interface BotUpdateInterface {
   tiers: Array<number[]>;
-  // Headwear: number[];
-  // ArmorVest: number[];
-  // TacticalVest: number[];
-  Backpack: number[];
+  HasModdedWeapons?: boolean;
+  AllowSniperRifles?: boolean;
   Ammo: number[];
-  BasePlateChance?: number;
-  PlateWeightings?: {
-    "2": number;
-    "3": number;
-    "4": number;
-    "5": number;
-    "6": number;
-  }[];
+  TacticalVest?: number[];
+  ArmorVest?: number[];
+  Backpack?: number[];
+  Earpiece?: number[];
+  Eyewear?: number[];
+  Headwear?: number[];
+  FaceCover?: number[];
+  // Scabbard?: number[];
+  FirstPrimary?: number[];
+  Holster?: number[];
+  BasePlateChance: number;
+  SidePlateChance?: number;
 }
 
-// TODO: Fix adding items failing.
-const equipmentToAdd = {
-  // Headwear: Helmets,
-  // ArmorVest: Armor,
-  // TacticalVest: Vests,
-  Backpack: Backpacks,
-};
-
 const equipmentTypesTochange = new Set([
-  "Backpack",
-  "Headwear",
-  "ArmorVest",
-  "FirstPrimaryWeapon",
   "TacticalVest",
+  "ArmorVest",
+  "Backpack",
+  "Earpiece",
+  "Eyewear",
+  "Headwear",
+  "FaceCover",
+  // "Scabbard",
+  "FirstPrimaryWeapon",
   "Holster",
 ]);
 
-const getRatingFuncForEquipmentType = (
-  equipmentType: keyof Equipment,
-  items: Record<string, ITemplateItem>
-) => {
-  const equipmentFunctions = {
-    Backpack: (item) => getBackPackInternalGridValue(item) * 10,
-    Headwear: (item: ITemplateItem) => getArmorRating(item, items),
-    ArmorVest: (item: ITemplateItem) => getArmorRating(item, items),
-    FirstPrimaryWeapon: getWeaponWeighting,
-    Holster: getWeaponWeighting,
-    TacticalVest: (item: ITemplateItem) => getTacticalVestValue(item, items),
-  };
-  return equipmentFunctions[equipmentType];
-};
+const getRating = (id: string, dflt = 10) => tieredItems.mapper[id] || dflt;
 
-export const normalizeMedianInventoryValues = (inventory: Inventory) => {
+export const normalizeMedianInventoryValues = (inventory: IInventory) => {
   for (const caliber in inventory.Ammo) {
     let highest = 0;
 
@@ -108,37 +195,56 @@ export const normalizeMedianInventoryValues = (inventory: Inventory) => {
 };
 
 export const addItemsToBotInventory = (
-  inventory: Inventory,
+  inventory: IInventory,
   botToUpdate: BotUpdateInterface,
-  items: Record<string, ITemplateItem>
+  items: Record<string, ITemplateItem>,
+  isMarksman = false
 ) => {
-  const {
-    Ammo: botToUpdateAmmo,
-    BasePlateChance,
-    PlateWeightings,
-    ...equipment
-  } = botToUpdate;
-  Object.keys(equipmentToAdd).forEach((key) => {
+  const { Ammo: botToUpdateAmmo, BasePlateChance, ...equipment } = botToUpdate;
+
+  const ammoToAdd = new Set<string>([]);
+
+  Object.keys(tieredItems).forEach((key) => {
     if (equipment[key]) {
       const equipmentStart = equipment[key][0];
       const equipmentEnd = equipment[key][1];
 
       if (equipmentStart || equipmentEnd) {
-        const startIndex = Math.floor(
-          equipmentToAdd[key].length * equipmentStart
-        );
-        const endIndex = Math.floor(equipmentToAdd[key].length * equipmentEnd);
+        const startIndex = Math.floor(tieredItems[key].length * equipmentStart);
+        const endIndex = Math.floor(tieredItems[key].length * equipmentEnd);
 
-        equipmentToAdd[key]
+        tieredItems[key]
           .slice(startIndex, endIndex)
-          .forEach((id: string) => {
+          .forEach(({ id, value }) => {
+            if (
+              (!botToUpdate.AllowSniperRifles &&
+                checkParentRecursive(id, items, [
+                  weaponTypeNameToId.SniperRifle,
+                  weaponTypeNameToId.MarksmanRifle,
+                ])) ||
+              (isMarksman &&
+                key === "FirstPrimaryWeapon" &&
+                !checkParentRecursive(id, items, [
+                  weaponTypeNameToId.SniperRifle,
+                  weaponTypeNameToId.MarksmanRifle,
+                  weaponTypeNameToId.AssaultCarbine,
+                ]))
+            ) {
+              // if (isMarksman && key === "FirstPrimaryWeapon")
+              //   console.log(items[id]._name);
+              return;
+            }
+
+            if (blacklistedItems.has(id) || blackList.has(id)) return;
             if (!inventory.equipment[key][id]) {
-              inventory.equipment[key][id] = 1;
+              inventory.equipment[key][id] = value;
             }
             const item = items[id];
-
-            if (["Headwear", "ArmorVest", "TacticalVest"].includes(key)) {
-              if (item?._props?.Slots?.length > 0) {
+            if (inventory.mods[id]) return;
+            switch (key) {
+              case "Headwear":
+              case "ArmorVest":
+              case "TacticalVest":
                 if (!inventory.mods[id]) {
                   const newModObject = {};
                   item._props.Slots.forEach((mod) => {
@@ -148,39 +254,95 @@ export const addItemsToBotInventory = (
                       ];
                     }
                   });
-                  if (Object.keys(newModObject).length)
-                    inventory.mods[id] = newModObject;
+                  inventory.mods[id] = newModObject;
                 }
-              }
+                break;
+              case "FirstPrimaryWeapon":
+              case "Holster":
+                if (!cachedInventory.mods[id] || !mappedPresets[id]) {
+                  break;
+                }
+                inventory.mods[id] = mappedPresets[id];
+                // if (isMarksman) console.log(items[id]._name);
+                if (cachedInventory.mods[id]["patron_in_weapon"]) {
+                  mappedPresets[id]["patron_in_weapon"] =
+                    cachedInventory.mods[id]["patron_in_weapon"];
+                }
+                if (cachedInventory.mods[id]["patron_in_weapon_000"]) {
+                  mappedPresets[id]["patron_in_weapon_000"] =
+                    cachedInventory.mods[id]["patron_in_weapon_000"];
+                }
+
+                if (cachedInventory.mods[id]["patron_in_weapon_001"]) {
+                  mappedPresets[id]["patron_in_weapon_001"] =
+                    cachedInventory.mods[id]["patron_in_weapon_001"];
+                }
+
+                const ammo = [
+                  ...(cachedInventory.mods[id]["patron_in_weapon"]
+                    ? cachedInventory.mods[id]["patron_in_weapon"]
+                    : []),
+                  ...(cachedInventory.mods[id]["patron_in_weapon_000"]
+                    ? cachedInventory.mods[id]["patron_in_weapon_000"]
+                    : []),
+                  ...(cachedInventory.mods[id]["patron_in_weapon_001"]
+                    ? cachedInventory.mods[id]["patron_in_weapon_001"]
+                    : []),
+                ];
+                ammo.forEach((id) => {
+                  ammoToAdd.add(id);
+                });
+
+                break;
+              default:
+                break;
             }
           });
       }
     }
   });
 
-  const ammoStart = botToUpdateAmmo[0];
-  const ammoEnd = botToUpdateAmmo[1];
-  if (ammoStart || ammoEnd) {
-    const startIndex = Math.floor(Ammo.length * ammoStart);
-    const endIndex = Math.floor(Ammo.length * ammoEnd);
-    Ammo.slice(startIndex, endIndex).forEach((id: string) => {
-      const calibre =
-        items[id]?._props?.Caliber || items[id]?._props?.ammoCaliber;
+  if (botToUpdate?.Ammo?.[1] > 0) {
+    const Ammo = tieredItems.Ammo;
 
-      if (
-        calibre &&
-        inventory.Ammo[calibre] &&
-        !inventory.Ammo?.[calibre]?.[id]
-      ) {
-        inventory.Ammo[calibre][id] = 1;
-      }
-    });
+    const ammoStart = botToUpdateAmmo[0];
+    const ammoEnd = botToUpdateAmmo[1];
+    if (ammoStart || ammoEnd) {
+      const startIndex = Math.floor(Ammo.length * ammoStart);
+      const endIndex = Math.floor(Ammo.length * ammoEnd);
+
+      const toAddAmmo = [...ammoToAdd]
+        .map((id) => ({
+          id,
+          value: tieredItems.mapper[id],
+        }))
+        .sort((a, b) => a.value - b.value);
+      const toAddAmmoStartIndex = Math.floor(toAddAmmo.length * ammoStart);
+      const toAddAmmoEndIndex = Math.floor(toAddAmmo.length * ammoEnd);
+
+      [
+        ...toAddAmmo.slice(toAddAmmoStartIndex, toAddAmmoEndIndex),
+        ...Ammo.slice(startIndex, endIndex),
+      ].forEach(({ id, value }) => {
+        const calibre =
+          items[id]?._props?.Caliber || items[id]?._props?.ammoCaliber;
+
+        if (
+          calibre &&
+          inventory.Ammo[calibre] &&
+          !inventory.Ammo?.[calibre]?.[id]
+        ) {
+          inventory.Ammo[calibre][id] = value;
+        }
+      });
+    }
   }
 
   // Add all plates to all equipment for all bots <<PLATE VARIETY>>
   Object.keys(inventory.mods).forEach((id) => {
     if (
-      checkParentRecursive(id, items, [armorParent, rigParent, headwearParent])
+      !checkParentRecursive(id, items, [headwearParent]) &&
+      checkParentRecursive(id, items, [armorParent, rigParent])
     ) {
       const item = items[id];
       if (item?._props?.Slots?.length > 0) {
@@ -195,6 +357,30 @@ export const addItemsToBotInventory = (
       }
     }
   });
+
+  const itemsToAdd = new Set<string>([]);
+
+  Object.keys(inventory.mods).forEach((id) => {
+    Object.values(inventory.mods[id])
+      .flat(1)
+      .forEach((item) => {
+        if (!inventory.mods[item]) itemsToAdd.add(item);
+      });
+  });
+
+  while (itemsToAdd.size) {
+    const [id] = itemsToAdd;
+    if (!inventory.mods[id]) {
+      if (mappedPresets[id]) {
+        inventory.mods[id] = mappedPresets[id];
+      } else if (cachedInventory.mods[id]) {
+        inventory.mods[id] = cachedInventory.mods[id];
+      }
+    }
+    itemsToAdd.delete(id);
+  }
+
+  deleteBlacklistedItemsFromInventory(inventory, blackList);
 };
 
 const defaultRandomisation = [
@@ -203,21 +389,65 @@ const defaultRandomisation = [
       min: 1,
       max: 100,
     },
-    equipmentMods: {},
+    equipmentMods: { mod_nvg: 0 },
   },
 ];
 
 export const setPlateWeightings = (
   name: string,
   equipmentFilters: EquipmentFilters,
-  index: number,
-  equipment: Inventory,
-  items: Record<string, ITemplateItem>
+  index: number
 ) => {
-  if (
-    !nonPmcBotConfig.nonPmcBots?.[name]?.BasePlateChance &&
-    !nonPmcBotConfig.nonPmcBots?.[name]?.PlateWeightings
-  ) {
+  equipmentFilters.armorPlateWeighting = [
+    {
+      levelRange: {
+        min: 1,
+        max: 100,
+      },
+      front_plate: {
+        "1": 1,
+        "2": 3,
+        "3": 20,
+        "4": 20,
+        "5": 4,
+        "6": 1,
+      },
+      back_plate: {
+        "1": 1,
+        "2": 3,
+        "3": 20,
+        "4": 20,
+        "5": 4,
+        "6": 1,
+      },
+      side_plate: {
+        "1": 1,
+        "2": 3,
+        "3": 20,
+        "4": 20,
+        "5": 4,
+        "6": 1,
+      },
+      left_side_plate: {
+        "1": 1,
+        "2": 3,
+        "3": 20,
+        "4": 20,
+        "5": 4,
+        "6": 1,
+      },
+      right_side_plate: {
+        "1": 1,
+        "2": 3,
+        "3": 20,
+        "4": 20,
+        "5": 4,
+        "6": 1,
+      },
+    },
+  ] as any;
+
+  if (!nonPmcBotConfig.nonPmcBots?.[name]?.BasePlateChance) {
     return;
   }
   //=========================================
@@ -229,123 +459,36 @@ export const setPlateWeightings = (
 
   const randomizationToUpdate = cloneDeep(equipmentFilters.randomisation[0]);
 
-  if (
-    nonPmcBotConfig.nonPmcBots?.[name]?.BasePlateChance &&
-    nonPmcBotConfig.nonPmcBots[name].BasePlateChance < 100
-  ) {
-    ["front_plate", "back_plate"].forEach((key) => {
-      let value = nonPmcBotConfig.nonPmcBots[name].BasePlateChance + index * 15;
+  if (nonPmcBotConfig.nonPmcBots[name].BasePlateChance < 101) {
+    let front = nonPmcBotConfig.nonPmcBots[name].BasePlateChance + index * 15;
+    if (front > 100) front = 100;
+    randomizationToUpdate.equipmentMods["front_plate"] = front;
+
+    let back =
+      nonPmcBotConfig.nonPmcBots[name].BasePlateChance - 20 + index * 15;
+    if (back > 100) back = 100;
+    randomizationToUpdate.equipmentMods["back_plate"] = back;
+  }
+
+  if (nonPmcBotConfig.nonPmcBots?.[name]?.SidePlateChance) {
+    ["left_side_plate", "right_side_plate"].forEach((key) => {
+      let value = nonPmcBotConfig.nonPmcBots[name].SidePlateChance + index * 10;
       if (value > 100) value = 100;
+      if (value < 0) value = 0;
       randomizationToUpdate.equipmentMods[key] = value;
     });
-
+  } else {
     ["left_side_plate", "right_side_plate"].forEach((key) => {
       let value =
-        nonPmcBotConfig.nonPmcBots[name].BasePlateChance - 60 + index * 20;
+        nonPmcBotConfig.nonPmcBots[name].BasePlateChance - 30 + index * 10;
       if (value > 100) value = 100;
       if (value < 0) value = 0;
       randomizationToUpdate.equipmentMods[key] = value;
     });
   }
-
+  // console.log(name, randomizationToUpdate.equipmentMods);
   equipmentFilters.randomisation[0] = randomizationToUpdate;
   //=========================================
-
-  if (nonPmcBotConfig.nonPmcBots?.[name]?.PlateWeightings) {
-    // const botPlateWeights = nonPmcBotConfig.nonPmcBots[name]
-    //   .PlateWeightings as {
-    //   "2": number;
-    //   "3": number;
-    //   "4": number;
-    //   "5": number;
-    //   "6": number;
-    // }[];
-    equipmentFilters.armorPlateWeighting = [
-      {
-        levelRange: {
-          min: 1,
-          max: 100,
-        },
-        // frontPlateWeights: {},
-        // backPlateWeights: {},
-        // sidePlateWeights: {},
-      },
-    ] as any;
-
-    const perplate = [
-      "front_plate",
-      "back_plate",
-      "side_plate",
-      "left_side_plate",
-      "right_side_plate",
-    ];
-
-    perplate.forEach((key) => {
-      equipmentFilters.armorPlateWeighting[0][key] =
-        nonPmcBotConfig.nonPmcBots[name].PlateWeightings[index];
-    });
-
-    // const plating = equipmentFilters.armorPlateWeighting[0];
-
-    // const front = {};
-    // const back = {};
-    // const side = {};
-    // Object.keys(equipment.mods).forEach((id) => {
-    //   if (
-    //     checkParentRecursive(id, items, [
-    //       armorParent,
-    //       rigParent,
-    //       headwearParent,
-    //     ])
-    //   ) {
-    //     const mod = equipment.mods[id];
-
-    //     ["Front_plate", "front_plate"].forEach((plateType) => {
-    //       if (mod[plateType]) {
-    //         mod[plateType].forEach((plateId) => {
-    //           const rating =
-    //             botPlateWeights?.[index]?.[items[plateId]._props.armorClass];
-    //           if (rating) {
-    //             plating.frontPlateWeights[plateId] = rating;
-    //           }
-    //         });
-    //       }
-    //     });
-    //     ["Back_plate", "back_plate"].forEach((plateType) => {
-    //       if (mod[plateType]) {
-    //         mod[plateType].forEach((plateId) => {
-    //           const rating =
-    //             botPlateWeights?.[index]?.[items[plateId]._props.armorClass];
-    //           if (rating) {
-    //             plating.backPlateWeights[plateId] = rating;
-    //           }
-    //         });
-    //       }
-    //     });
-    //     ["left_side_plate", "right_side_plate"].forEach((plateType) => {
-    //       if (mod[plateType]) {
-    //         mod[plateType].forEach((plateId) => {
-    //           const rating =
-    //             botPlateWeights?.[index]?.[items[plateId]._props.armorClass];
-    //           if (rating) {
-    //             plating.sidePlateWeights[plateId] = rating;
-    //           }
-    //         });
-    //       }
-    //     });
-
-    //     // items[id]._props.Slots.forEach((mod) => {
-    //     //   if (!mod._props.filters[0].locked) {
-    //     //     names.add(mod._name);
-    //     //   }
-    //     // });
-    //   }
-    // });
-
-    // // equipmentFilters.filterPlatesByLevel = true;
-  }
-
-  // saveToFile(equipmentFilters, name + "-filter.json");
 };
 
 export const buffScavGearAsLevel = (
@@ -372,7 +515,7 @@ export const buffScavGearAsLevel = (
     "Earpiece",
     "ArmorVest",
     "FaceCover",
-    "Scabbard",
+    // "Scabbard",
     "Eyewear",
     "Backpack",
   ].forEach((key) => {
@@ -413,7 +556,7 @@ export const buildEmptyWeightAdjustmentsByDevision = (
 };
 
 export const applyValuesToStoredEquipment = (
-  inventory: Inventory,
+  inventory: IInventory,
   items: Record<string, ITemplateItem>,
   storedWeightingAdjustmentDetails: StoredWeightingAdjustmentDetails[]
 ) => {
@@ -435,9 +578,8 @@ export const applyValuesToStoredEquipment = (
 
   const equipmentList = {};
 
-  Object.keys(inventory.equipment).forEach((key: keyof Equipment) => {
+  Object.keys(inventory.equipment).forEach((key: keyof IEquipment) => {
     if (equipmentTypesTochange.has(key)) {
-      const ratingFunc = getRatingFuncForEquipmentType(key, items);
       equipmentList[key] = [];
       Object.keys(inventory.equipment[key]).forEach((id) => {
         //Zero out equipment
@@ -447,13 +589,13 @@ export const applyValuesToStoredEquipment = (
           );
           equipmentList[key].push({
             id,
-            rating: ratingFunc(items[id], defAmmoWeight),
+            rating: getRating(id),
             // +  inventory.equipment[key][id],
           });
         } else {
           equipmentList[key].push({
             id,
-            rating: ratingFunc(items[id]), //+ inventory.equipment[key][id],
+            rating: getRating(id), //+ inventory.equipment[key][id],
           });
         }
       });
@@ -485,7 +627,7 @@ export const applyValuesToStoredEquipment = (
       });
     });
 
-    Object.keys(equipmentList).forEach((key: keyof Equipment) => {
+    Object.keys(equipmentList).forEach((key: keyof IEquipment) => {
       const listPortion = equipmentList[key];
       const quantityPerLevel = Math.round(listPortion.length / division);
       const resultingList = (listPortion as Array<{ id; rating }>).slice(

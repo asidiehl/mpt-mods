@@ -1,10 +1,10 @@
 {
     "name": "MoreCheckmarksBackend",
-    "version": "1.5.14",
+    "version": "1.5.15",
     "main": "src/MoreCheckmarksStaticRouter.js",
     "license": "MIT",
     "author": "VIP",
-    "sptVersion": "~3.9",
+    "sptVersion": "~3.10",
     "scripts": {
         "setup": "npm i",
         "build": "node ./packageBuild.ts"

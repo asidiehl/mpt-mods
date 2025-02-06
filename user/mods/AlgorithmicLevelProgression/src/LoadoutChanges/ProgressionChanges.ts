@@ -41,7 +41,6 @@ import Tier5 from "../Constants/Tier5";
 
 import botConfigequipmentpmc from "../Cache/botConfigequipmentpmc.json";
 import tablesbotstypesusec from "../Cache/tablesbotstypesusec.json";
-import { globalValues } from "./GlobalValues";
 import { buildLootChanges } from "./LootChanges";
 import { ILogger } from "@spt/models/spt/utils/ILogger";
 import { fixSpecificItemIssues } from "./FixSpecificScopeIssues";
@@ -52,6 +51,47 @@ export default function ProgressionChanges(
   const databaseServer = container.resolve<DatabaseServer>("DatabaseServer");
   const tables = databaseServer.getTables();
   const configServer = container.resolve<ConfigServer>("ConfigServer");
+
+  // const presets = tables.globals.ItemPresets;
+
+  // let mappedPresets = {};
+
+  // Object.values(presets).forEach((preset) => {
+  //   if (preset._encyclopedia) {
+  //     const newPreset = {};
+
+  //     let mainId = "";
+  //     const otherPresets = {};
+  //     const mapper = {};
+  //     preset._items.forEach((item) => {
+  //       if (item._tpl === preset._encyclopedia) {
+  //         mainId = item._id;
+  //       }
+
+  //       if (item.parentId && item.slotId) {
+  //         mapper[item._id] = item._tpl;
+  //         if (item.parentId === mainId) {
+  //           if (!newPreset[item.slotId]) newPreset[item.slotId] = [];
+  //           newPreset[item.slotId].push(item._tpl);
+  //         } else {
+  //           if (!otherPresets[mapper[item.parentId]])
+  //             otherPresets[mapper[item.parentId]] = {};
+  //           if (!otherPresets[mapper[item.parentId]][item.slotId]) {
+  //             otherPresets[mapper[item.parentId]][item.slotId] = [item._tpl];
+  //           } else {
+  //             otherPresets[mapper[item.parentId]][item.slotId].push(item._tpl);
+  //           }
+  //         }
+  //       }
+  //     });
+
+  //     mappedPresets[preset._encyclopedia] = newPreset;
+  //     if (Object.keys(otherPresets))
+  //       mappedPresets = { ...mappedPresets, ...otherPresets };
+  //   }
+  // });
+
+  // saveToFile(mappedPresets, "Constants/mappedPresets.json");
 
   const botConfig = configServer.getConfig<IBotConfig>(ConfigTypes.BOT);
   const pmcConfig = configServer.getConfig<IPmcConfig>(ConfigTypes.PMC);
@@ -104,6 +144,7 @@ export default function ProgressionChanges(
         "Mechanic",
         "Ragman",
         "Jaeger",
+        "Arena",
       ];
 
       const tradersToExclude = [
@@ -121,9 +162,60 @@ export default function ProgressionChanges(
         return tradersToInclude.includes(base.nickname);
       });
 
-      botConfig.equipment.pmc.nvgIsActiveChanceNightPercent = 95;
-      botConfig.equipment.pmc.lightIsActiveNightChancePercent = 95;
+      botConfig.equipment.pmc.nvgIsActiveChanceNightPercent = 85;
+      botConfig.equipment.pmc.lightIsActiveNightChancePercent = 45;
+      botConfig.equipment.pmc.lightIsActiveDayChancePercent = 25;
       botConfig.equipment.pmc.laserIsActiveChancePercent = 90;
+
+      botConfig.equipment.pmc.armorPlateWeighting = [
+        {
+          levelRange: {
+            min: 1,
+            max: 99,
+          },
+          front_plate: {
+            "1": 1,
+            "2": 3,
+            "3": 15,
+            "4": 35,
+            "5": 15,
+            "6": 5,
+          },
+          back_plate: {
+            "1": 1,
+            "2": 3,
+            "3": 15,
+            "4": 35,
+            "5": 15,
+            "6": 5,
+          },
+          side_plate: {
+            "1": 1,
+            "2": 3,
+            "3": 15,
+            "4": 35,
+            "5": 15,
+            "6": 5,
+          },
+          left_side_plate: {
+            "1": 1,
+            "2": 3,
+            "3": 15,
+            "4": 35,
+            "5": 15,
+            "6": 5,
+          },
+          right_side_plate: {
+            "1": 1,
+            "2": 3,
+            "3": 15,
+            "4": 35,
+            "5": 15,
+            "6": 5,
+          },
+        },
+      ];
+      // botConfig.equipment.pmc.forceOnlyArmoredRigWhenNoArmor = false;
       botConfig.equipment.pmc.faceShieldIsActiveChancePercent = 100;
       botConfig.equipment.pmc.weightingAdjustmentsByBotLevel =
         buildEmptyWeightAdjustments();
@@ -157,37 +249,40 @@ export default function ProgressionChanges(
         ) => {
           if (!tradeItems || !nickname) return;
 
-          // if (index === 0) console.log(JSON.stringify(questassort))
           if (
             config.addCustomTraderItems &&
             ![...tradersToExclude, ...tradersToInclude].includes(nickname)
           ) {
             console.log(
-              `\nAlgorithmicLevelProgression: Attempting to add items for custom trader > ${nickname}!\n`
+              `[AlgorithmicLevelProgression]: Attempting to add items for custom trader > ${nickname}!`
             );
           }
+
           tradeItems.forEach(({ _tpl, _id, parentId, slotId }) => {
             if (
               blacklistedItems.has(_tpl) ||
               checkParentRecursive(_tpl, items, [armorPlateParent])
             )
               return; //Remove blacklisted items and bullets
+
             const item = items[_tpl];
             if (!item)
               return console.log(
-                "AlgorithmicLevelProgression: Skipping custom item: ",
+                "[AlgorithmicLevelProgression]: Skipping custom item: ",
                 _tpl,
                 " for trader: ",
                 nickname
               );
+
             const parent = item._parent;
             if (!parent || !items[parent])
               return console.log(
-                "AlgorithmicLevelProgression: Skipping custom item: ",
+                "[AlgorithmicLevelProgression]: Skipping custom item: ",
                 _tpl,
                 " for trader: ",
                 nickname
               );
+
             const equipmentType = getEquipmentType(parent, items);
 
             switch (true) {
@@ -204,8 +299,8 @@ export default function ProgressionChanges(
                     [_tpl]: 1,
                   };
 
-                  usecInventory.items.SecuredContainer[_tpl] = 1;
-                  bearInventory.items.SecuredContainer[_tpl] = 1;
+                  // usecInventory.items.SecuredContainer[_tpl] = 1;
+                  // bearInventory.items.SecuredContainer[_tpl] = 1;
                 } else {
                   console.log(
                     item._name,
@@ -215,8 +310,8 @@ export default function ProgressionChanges(
                 }
                 break;
               case checkParentRecursive(parent, items, [magParent]):
-                usecInventory.items.SecuredContainer[_tpl] = 1;
-                bearInventory.items.SecuredContainer[_tpl] = 1;
+                // usecInventory.items.SecuredContainer[_tpl] = 1;
+                // bearInventory.items.SecuredContainer[_tpl] = 1;
                 break;
               // case equipmentType === "mod_scope":
               //     break;
@@ -433,15 +528,18 @@ export default function ProgressionChanges(
       setWeightingAdjustments(items, botConfig, tradersMasterList, mods);
 
       let lootingBotsDetected = false;
+
       if (
         tables?.bots?.types?.bear?.generation?.items?.backpackLoot?.weights &&
         new Set(
           Object.values(
-            tables.bots.types.bear.generation.items.backpackLoot.weights
+            tables?.bots?.types?.bear?.generation?.items?.backpackLoot.weights
           )
         ).size === 1
       ) {
-        console.log("[AlgorithmicLevelProgression] Looting bots detected");
+        console.log(
+          "[AlgorithmicLevelProgression] Looting bots detected, removing pmc loot"
+        );
         lootingBotsDetected = true;
       }
 
@@ -452,8 +550,8 @@ export default function ProgressionChanges(
         lootingBotsDetected
       );
 
-      deleteBlacklistedItemsFromInventory(usecInventory);
-      deleteBlacklistedItemsFromInventory(bearInventory);
+      deleteBlacklistedItemsFromInventory(usecInventory, blacklistedItems);
+      deleteBlacklistedItemsFromInventory(bearInventory, blacklistedItems);
 
       // add ai2 and surv to bot containerq
 
@@ -470,8 +568,8 @@ export default function ProgressionChanges(
       usecInventory.items.SecuredContainer["5e831507ea0a7c419c2f9bd9"] = 1;
       bearInventory.items.SecuredContainer["5e831507ea0a7c419c2f9bd9"] = 1;
 
-      ensureAllAmmoInSecuredContainer(usecInventory);
-      ensureAllAmmoInSecuredContainer(bearInventory);
+      // ensureAllAmmoInSecuredContainer(usecInventory);
+      // ensureAllAmmoInSecuredContainer(bearInventory);
 
       addBossSecuredContainer(usecInventory);
       addBossSecuredContainer(bearInventory);
@@ -482,6 +580,10 @@ export default function ProgressionChanges(
 
       fixSpecificItemIssues(usecInventory);
       fixSpecificItemIssues(bearInventory);
+
+      tables.bots.types.usec.inventory = usecInventory;
+      tables.bots.types.bear.inventory = bearInventory;
+      tables.bots.types.bear.inventory = tables.bots.types.usec.inventory; // TESTING << REMOVE IF SLOWER
     } catch (error) {
       config.forceCached = true;
       throw Error(
@@ -514,6 +616,9 @@ export default function ProgressionChanges(
       )
     ).size === 1
   ) {
+    console.log(
+      "[AlgorithmicLevelProgression] Looting bots detected, removing scav loot"
+    );
     const generation = (botConfig.equipment.assault.randomisation[0] as any)
       .generation;
     generation.backpackLoot = {
@@ -533,11 +638,9 @@ export default function ProgressionChanges(
     };
   }
 
-  // saveToFile(botConfig, "botConfig1.json");
-  // saveToFile(pmcConfig, "pmcConfig1.json");
+  // saveToFile(botConfig, "botConfig.json");
+  // saveToFile(pmcConfig, "pmcConfig.json");
 
-  globalValues.originalBotTypes = cloneDeep(tables.bots.types);
-  globalValues.originalWeighting = cloneDeep(botConfig.equipment.pmc);
   // tables.bots.types.usec
   // botConfig.equipment.pmc
   // saveToFile(tables.bots.types.usec, `Cache/tablesbotstypesusec.json`);

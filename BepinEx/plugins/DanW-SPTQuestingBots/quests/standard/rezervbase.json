@@ -51,6 +51,7 @@
         },
         "pmcsOnly": true,
         "name": "Hermetic Alarm Patrol",
+        "forbiddenWeapons" : [ "pistol" ],
         "objectives" : [
             {
                 "repeatable": true,
@@ -201,6 +202,16 @@
         "maxBots": 3,
         "desirability": 35,
         "name": "D2 Switch",
+        "requiredSwitches": {
+            "autoId_00000_D2_LEVER": false
+        },
+        "waypoints" : [
+            {
+                "x": -95.56027,
+                "y": -14.5272923,
+                "z": 37.5281944
+            }
+        ],
         "objectives" : [
             {
                 "repeatable": true,
@@ -208,14 +219,6 @@
                 "maxDistanceFromBot": 9999,
                 "maxRunDistance": 13,
                 "steps": [
-                    {
-                        "waitTimeAfterCompleting": 1,
-                        "position" : {
-                            "x": -128.6694,
-                            "y": -14.5232315,
-                            "z": 23.99557
-                        }
-                    },
                     {
                         "waitTimeAfterCompleting": 1,
                         "position" : {
@@ -238,6 +241,63 @@
         ]
     },
     {
+        "repeatable": false,
+        "minLevel": 0,
+        "maxLevel": 99,
+        "maxBots": 3,
+        "desirability": 25,
+        "minRaidET": 420,
+        "name": "D2 Extract Switch",
+        "requiredSwitches": {
+            "autoId_00000_D2_LEVER": true,
+            "00453": false
+        },
+        "waypoints" : [
+            {
+                "x": -80.53533,
+                "y": -15.8884859,
+                "z": 144.298065
+            },
+            {
+                "x": -27.8268414,
+                "y": 12.5911255,
+                "z": 180.3212
+            },
+            {
+                "x": -73.2474442,
+                "y": -11.7335672,
+                "z": 67.4957
+            }
+        ],
+        "objectives" : [
+            {
+                "repeatable": false,
+                "minDistanceFromBot": 5,
+                "maxDistanceFromBot": 750,
+                "maxRunDistance": 28,
+                "steps": [
+                    {
+                        "waitTimeAfterCompleting": 1,
+                        "position" : {
+                            "x": -116.5,
+                            "y": -18.4,
+                            "z": 169.3
+                        }
+                    },
+                    {
+                        "stepType" : "ToggleSwitch",
+                        "switchID" : "00453",
+                        "position" : {
+                            "x": -116.5,
+                            "y": -18.4,
+                            "z": 169.3
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    {
         "repeatable": true,
         "minLevel": 0,
         "maxLevel": 99,
@@ -245,6 +305,23 @@
         "desirability": 20,
         "canRunBetweenObjectives": false,
         "name": "D2 Area",
+        "waypoints" : [
+            {
+                "x": -80.53533,
+                "y": -15.8884859,
+                "z": 144.298065
+            },
+            {
+                "x": -27.8268414,
+                "y": 12.5911255,
+                "z": 180.3212
+            },
+            {
+                "x": -73.2474442,
+                "y": -11.7335672,
+                "z": 67.4957
+            }
+        ],
         "objectives" : [
             {
                 "repeatable": true,
@@ -320,31 +397,6 @@
                         }
                     }
                 ]
-            },
-            {
-                "repeatable": true,
-                "minDistanceFromBot": 5,
-                "maxDistanceFromBot": 75,
-                "maxRunDistance": 28,
-                "steps": [
-                    {
-                        "waitTimeAfterCompleting": 1,
-                        "position" : {
-                            "x": -116.5,
-                            "y": -18.4,
-                            "z": 169.3
-                        }
-                    },
-                    {
-                        "stepType" : "ToggleSwitch",
-                        "switchID" : "00453",
-                        "position" : {
-                            "x": -116.5,
-                            "y": -18.4,
-                            "z": 169.3
-                        }
-                    }
-                ]
             }
         ]
     },
@@ -357,6 +409,13 @@
         "maxRaidET": 300,
         "pmcsOnly": true,
         "name": "Command Center Rush",
+        "waypoints" : [
+            {
+                "x": -95.56027,
+                "y": -14.5272923,
+                "z": 37.5281944
+            }
+        ],
         "objectives" : [
             {
                 "repeatable": false,
@@ -1025,6 +1084,7 @@
         "canRunBetweenObjectives": false,
         "pmcsOnly": true,
         "name": "Dome Upper Sniping",
+        "forbiddenWeapons" : [ "pistol", "shotgun" ],
         "objectives" : [
             {
                 "repeatable": true,
@@ -1747,6 +1807,13 @@
         "desirability": 40,
         "canRunBetweenObjectives": false,
         "name": "Command Center",
+        "waypoints" : [
+            {
+                "x": -95.56027,
+                "y": -14.5272923,
+                "z": 37.5281944
+            }
+        ],
         "objectives" : [
             {
                 "repeatable": true,
@@ -2156,6 +2223,7 @@
         "desirability": 10,
         "pmcsOnly": true,
         "name": "BMP #1 Tower",
+        "forbiddenWeapons" : [ "pistol", "shotgun" ],
         "objectives" : [
             {
                 "repeatable": true,
@@ -2203,6 +2271,7 @@
         "desirability": 10,
         "pmcsOnly": true,
         "name": "South Hill Tower",
+        "forbiddenWeapons" : [ "pistol", "shotgun" ],
         "objectives" : [
             {
                 "repeatable": true,
@@ -2983,6 +3052,7 @@
         "desirability": 15,
         "pmcsOnly": true,
         "name": "South Hill Sniping",
+        "forbiddenWeapons" : [ "pistol", "shotgun" ],
         "objectives" : [
             {
                 "repeatable": true,
@@ -3184,6 +3254,7 @@
         "desirability": 10,
         "pmcsOnly": true,
         "name": "White Knight Roof",
+        "forbiddenWeapons" : [ "pistol", "shotgun" ],
         "objectives" : [
             {
                 "repeatable": true,
@@ -3424,6 +3495,7 @@
         "desirability": 10,
         "pmcsOnly": true,
         "name": "Black Knight Roof",
+        "forbiddenWeapons" : [ "pistol", "shotgun" ],
         "objectives" : [
             {
                 "repeatable": true,
@@ -3554,6 +3626,7 @@
         "desirability": 15,
         "pmcsOnly": true,
         "name": "Dome Lower Sniping",
+        "forbiddenWeapons" : [ "pistol", "shotgun" ],
         "objectives" : [
             {
                 "repeatable": true,
@@ -3763,6 +3836,23 @@
         "desirability": 25,
         "canRunBetweenObjectives": false,
         "name": "D2 from Dome",
+        "waypoints" : [
+            {
+                "x": -80.53533,
+                "y": -15.8884859,
+                "z": 144.298065
+            },
+            {
+                "x": -27.8268414,
+                "y": 12.5911255,
+                "z": 180.3212
+            },
+            {
+                "x": -73.2474442,
+                "y": -11.7335672,
+                "z": 67.4957
+            }
+        ],
         "objectives" : [
             {
                 "repeatable": false,
@@ -3821,6 +3911,7 @@
         "desirability": 10,
         "pmcsOnly": true,
         "name": "Black Bishop Roof",
+        "forbiddenWeapons" : [ "pistol", "shotgun" ],
         "objectives" : [
             {
                 "repeatable": true,
@@ -3892,6 +3983,7 @@
         "desirability": 10,
         "pmcsOnly": true,
         "name": "White Bishop Roof",
+        "forbiddenWeapons" : [ "pistol", "shotgun" ],
         "objectives" : [
             {
                 "repeatable": true,
@@ -4031,6 +4123,7 @@
         "desirability": 10,
         "pmcsOnly": true,
         "name": "White King Roof",
+        "forbiddenWeapons" : [ "pistol", "shotgun" ],
         "objectives" : [
             {
                 "repeatable": true,
@@ -4364,6 +4457,7 @@
         "desirability": 10,
         "pmcsOnly": true,
         "name": "Black Pawn Roof",
+        "forbiddenWeapons" : [ "pistol", "shotgun" ],
         "objectives" : [
             {
                 "repeatable": true,
@@ -4574,6 +4668,7 @@
         "desirability": 10,
         "pmcsOnly": true,
         "name": "White Pawn Roof",
+        "forbiddenWeapons" : [ "pistol", "shotgun" ],
         "objectives" : [
             {
                 "repeatable": true,
@@ -4646,6 +4741,210 @@
                             "x": -83.51541,
                             "y": 5.586532,
                             "z": 81.13965
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "repeatable": true,
+        "isCamping": true,
+        "minLevel": 0,
+        "maxLevel": 99,
+        "maxBots": 2,
+        "maxBotsInGroup": 1,
+        "minRaidET": 300,
+        "requiredSwitches": {
+            "autoId_00000_D2_LEVER": true
+        },
+        "desirability": 20,
+        "name": "D2 Extract Camping",
+        "forbiddenWeapons" : [ "sniperRifle" ],
+        "waypoints" : [
+            {
+                "x": -80.53533,
+                "y": -15.8884859,
+                "z": 144.298065
+            },
+            {
+                "x": -27.8268414,
+                "y": 12.5911255,
+                "z": 180.3212
+            },
+            {
+                "x": -73.2474442,
+                "y": -11.7335672,
+                "z": 67.4957
+            }
+        ],
+        "objectives" : [
+            {
+                "repeatable": true,
+                "minDistanceFromBot": 5,
+                "maxDistanceFromBot": 750,
+                "maxRunDistance": 20,
+                "lootAfterCompleting": "Inhibit",
+                "steps": [
+                    {
+                        "waitTimeAfterCompleting": 1,
+                        "position" : {
+                            "x": -99.64825,
+                            "y": -18.4064484,
+                            "z": 158.186447
+                        }
+                    },
+                    {
+                        "stepType" : "Ambush",
+                        "minElapsedTime": {
+                            "min": 120,
+                            "max": 300
+                        },
+                        "position" : {
+                            "x": -99.64825,
+                            "y": -18.4064484,
+                            "z": 158.186447
+                        },
+                        "lookToPosition" : {
+                            "x": -90.34085,
+                            "y": -19.48446,
+                            "z": 152.01239
+                        }
+                    }
+                ]
+            },
+            {
+                "repeatable": true,
+                "minDistanceFromBot": 5,
+                "maxDistanceFromBot": 750,
+                "maxRunDistance": 10,
+                "lootAfterCompleting": "Inhibit",
+                "steps": [
+                    {
+                        "waitTimeAfterCompleting": 1,
+                        "position" : {
+                            "x": -89.4850845,
+                            "y": -16.2609348,
+                            "z": 154.509933
+                        }
+                    },
+                    {
+                        "stepType" : "Ambush",
+                        "minElapsedTime": {
+                            "min": 120,
+                            "max": 300
+                        },
+                        "position" : {
+                            "x": -89.4850845,
+                            "y": -16.2609348,
+                            "z": 154.509933
+                        },
+                        "lookToPosition" : {
+                            "x": -92.74455,
+                            "y": -16.2609348,
+                            "z": 152.690384
+                        }
+                    }
+                ]
+            },
+            {
+                "repeatable": true,
+                "minDistanceFromBot": 5,
+                "maxDistanceFromBot": 750,
+                "maxRunDistance": 5,
+                "lootAfterCompleting": "Inhibit",
+                "steps": [
+                    {
+                        "waitTimeAfterCompleting": 1,
+                        "position" : {
+                            "x": -82.94805,
+                            "y": -16.20588,
+                            "z": 150.744766
+                        }
+                    },
+                    {
+                        "stepType" : "Ambush",
+                        "minElapsedTime": {
+                            "min": 120,
+                            "max": 300
+                        },
+                        "position" : {
+                            "x": -82.94805,
+                            "y": -16.20588,
+                            "z": 150.744766
+                        },
+                        "lookToPosition" : {
+                            "x": -82.5719147,
+                            "y": -15.9544868,
+                            "z": 145.723633
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "repeatable": true,
+        "isCamping": true,
+        "minLevel": 0,
+        "maxLevel": 99,
+        "maxBots": 2,
+        "maxBotsInGroup": 1,
+        "minRaidET": 300,
+        "requiredSwitches": {
+            "autoId_00000_D2_LEVER": true
+        },
+        "desirability": 20,
+        "name": "D2 Entrance Camping",
+        "forbiddenWeapons" : [ "sniperRifle" ],
+        "waypoints" : [
+            {
+                "x": -80.53533,
+                "y": -15.8884859,
+                "z": 144.298065
+            },
+            {
+                "x": -27.8268414,
+                "y": 12.5911255,
+                "z": 180.3212
+            },
+            {
+                "x": -73.2474442,
+                "y": -11.7335672,
+                "z": 67.4957
+            }
+        ],
+        "objectives" : [
+            {
+                "repeatable": true,
+                "minDistanceFromBot": 5,
+                "maxDistanceFromBot": 750,
+                "maxRunDistance": 5,
+                "lootAfterCompleting": "Inhibit",
+                "steps": [
+                    {
+                        "waitTimeAfterCompleting": 1,
+                        "position" : {
+                            "x": -62.6594162,
+                            "y": -14.703867,
+                            "z": 145.106491
+                        }
+                    },
+                    {
+                        "stepType" : "Ambush",
+                        "minElapsedTime": {
+                            "min": 120,
+                            "max": 300
+                        },
+                        "position" : {
+                            "x": -62.6594162,
+                            "y": -14.703867,
+                            "z": 145.106491
+                        },
+                        "lookToPosition" : {
+                            "x": -80.40696,
+                            "y": -15.8884859,
+                            "z": 144.484146
                         }
                     }
                 ]

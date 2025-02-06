@@ -1,13 +1,13 @@
 {
     "name": "SPTQuestingBots",
-    "version": "0.7.0",
+    "version": "0.9.0",
     "main": "src/mod.js",
     "license": "MIT",
     "author": "DanW",
-    "sptVersion": ">=3.9.0 <3.10.0",
+    "sptVersion": ">=3.10.0 <3.11.0",
     "loadBefore": [],
     "loadAfter": [],
-    "incompatibilities": [],
+    "incompatibilities": ["Andrudis-QuestManiac"],
     "isBundleMod": false,
     "scripts": {
         "setup": "npm i",

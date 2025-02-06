@@ -1,5 +1,5 @@
 import { IBotBase } from "../../types/models/eft/common/tables/IBotBase";
-import { BotGenerationDetails } from "../../types/models/spt/bots/BotGenerationDetails";
+import { IBotGenerationDetails } from "../../types/models/spt/bots/BotGenerationDetails";
 import { IRandomisedBotLevelResult } from "../../types/models/eft/bot/IRandomisedBotLevelResult";
 import { MinMax } from "../../types/models/common/MinMax";
 import { DependencyContainer } from "tsyringe";
@@ -28,7 +28,7 @@ export default function BotLevelChanges(
     (_t, result: BotLevelGenerator) => {
       result.generateBotLevel = (
         levelDetails: MinMax,
-        botGenerationDetails: BotGenerationDetails,
+        botGenerationDetails: IBotGenerationDetails,
         bot: IBotBase
       ): IRandomisedBotLevelResult => {
         if (!botGenerationDetails.isPmc)
@@ -50,11 +50,11 @@ export default function BotLevelChanges(
         const randomizedRange = test.sort((a, b) => b.val - a.val)[0]
           .levelRange;
         const range = { ...levelRange[randomizedRange] } as MinMax;
-        if (range.max > 99) {
-          range.max = Math.min(
-            range.max,
-            Math.max(range.min + 10, playerLevel + 10, range.max - range.min)
-          );
+        if (range.max > 79) {
+          range.max = 79;
+        }
+        if (range.min > 70) {
+          range.min = 50;
         }
 
         const level =

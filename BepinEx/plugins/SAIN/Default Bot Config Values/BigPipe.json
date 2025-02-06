@@ -31,7 +31,8 @@
         "DAMAGE_TIME_TO_GETUP": 3,
         "SHALL_GETUP_ON_ROTATE": true,
         "SHALL_LAY_WITHOUT_CHECK": false,
-        "IF_NO_ENEMY": true
+        "IF_NO_ENEMY": true,
+        "SHALL_LAY_PROBABILTY_WHEN_ARTILLERY": 0
       },
       "Aiming": {
         "MAX_AIM_PRECICING": 2.0,
@@ -92,7 +93,8 @@
         "BAD_SHOOTS_MAX": 0,
         "BAD_SHOOTS_OFFSET": 1.0,
         "BAD_SHOOTS_MAIN_COEF": 1.0,
-        "START_TIME_COEF": 1.0
+        "START_TIME_COEF": 1.0,
+        "AIMING_ON_WAY": 50.0
       },
       "Look": {
         "OLD_TIME_POINT": 11.0,
@@ -147,7 +149,8 @@
         "SHOOT_FROM_EYES": true,
         "ANGLE_FOR_GETUP": 60.0,
         "MINIMUM_VISIBLE_DIST": 40.0,
-        "CAN_USE_STRIBOSCOPE": -1.0
+        "CAN_USE_STRIBOSCOPE": -1.0,
+        "LOOK_TO_ENEMY_TIME": 40.0
       },
       "Shoot": {
         "RECOIL_TIME_NORMALIZE": 1.0,
@@ -159,6 +162,10 @@
         "WAIT_NEXT_STATIONARY_GRENADE": 0.3,
         "WAIT_NEXT_SINGLE_SHOT_LONG_MAX": 3.3,
         "WAIT_NEXT_SINGLE_SHOT_LONG_MIN": 0.4,
+        "NEXT_SINGLE_SHOT_PAUSE": 5.0,
+        "SINGLE_SHOT_SERIES_TIME_MIN": 9.0,
+        "SINGLE_SHOT_SERIES_TIME_MAX": 11.0,
+        "USE_SINGLE_SHOT_SERIES": false,
         "MARKSMAN_DIST_SEK_COEF": 44.0,
         "FINGER_HOLD_SINGLE_SHOT": 0.14,
         "FINGER_HOLD_STATIONARY_BULLET": 0.14,
@@ -200,6 +207,7 @@
         "DELAY_BEFORE_EXAMINE_MALFUNCTION": 0.5,
         "DELAY_BEFORE_FIX_MALFUNCTION": 0.5,
         "TRY_CHANGE_WEAPON_INSTEAD_RELOAD": false,
+        "MELEE_ATTACK_ZIG_ZAG": false,
         "MIN_DIST_TO_ENEMY_TO_CHANGE_WEAPON_INSTEAD_RELOAD": 30.0,
         "CHANCE_TO_CHANGE_WEAPON_INSTEAD_RELOAD": 60.0,
         "CHANCE_TO_CHANGE_WEAPON_INSTEAD_RELOAD_ENEMY_WITHOUT_HELM": 90.0,
@@ -246,7 +254,11 @@
         "FIRST_TURN_SPEED": 160.0,
         "FIRST_TURN_BIG_SPEED": 320.0,
         "TURN_SPEED_ON_SPRINT": 200.0,
-        "NO_ZIG_ZAG": false
+        "NO_ZIG_ZAG": false,
+        "CAN_SPRINT_GO_TO_SOME_POINT": true,
+        "DIST_SPRINT_GO_TO_SOME_POINT": 5.0,
+        "MELEE_ATTACK_ZIG_ZAG": false,
+        "MELEE_ATTACK_OPTIMIZE": false
       },
       "Grenade": {
         "DELTA_NEXT_ATTEMPT_FROM_COVER": 5.0,
@@ -283,6 +295,7 @@
         "NO_RUN_FROM_AI_GRENADES": true,
         "MAX_THROW_POWER": 25.0,
         "GrenadePrecision": 0.05,
+        "GRENADE_PRECISION_PORTALS": 0.01,
         "STOP_WHEN_THROW_GRENADE": true,
         "WAIT_TIME_TURN_AWAY": 1.2,
         "SMOKE_SUPPRESS_DELTA": 20.0,
@@ -297,7 +310,8 @@
         "FIRST_TIME_SEEN_DELTA_CAN_THROW": 0.0,
         "SHALL_GETUP": true,
         "CAN_LAY": false,
-        "IGNORE_SMOKE_GRENADE": false
+        "IGNORE_SMOKE_GRENADE": false,
+        "CAN_THROW_FROM_ANY_PLACE": true
       },
       "Change": {
         "SMOKE_VISION_DIST": 0.6,
@@ -415,11 +429,12 @@
         "CHANCE_TO_PLAY_GESTURE_WHEN_CLOSE": 50.0,
         "HEAD_TURN_SPEED": 41.0,
         "HEAD_ANG_ROTATE": 25.0,
+        "LOOT_PATROL_POTENTIAL_CLUSTERS_AMOUNT": 1,
         "CHANCE_TO_PLAY_VOICE_WHEN_CLOSE": 50.0,
         "GO_TO_NEXT_POINT_DELTA": 90.0,
         "GO_TO_NEXT_POINT_DELTA_RESERV_WAY": 15.0,
-        "DEAD_BODY_SEE_DIST": 20.0,
-        "DEAD_BODY_LEAVE_DIST": 50.0,
+        "DEAD_BODY_SEE_DIST": 50.0,
+        "DEAD_BODY_LEAVE_DIST": 70.0,
         "CAN_LOOK_TO_DEADBODIES": false,
         "GESTURE_LENGTH": 2.0,
         "SHALL_STOP_IN_PEACEFUL_ACTION": false,
@@ -445,7 +460,11 @@
         "TRY_CHOOSE_RESERV_WAY_ON_START": false,
         "CAN_CHECK_MAGAZINE": false,
         "PICKUP_ITEMS_TO_BACKPACK_OR_CONTAINER": false,
-        "DO_RANDOM_DROP_ITEM": false
+        "DO_RANDOM_DROP_ITEM": false,
+        "STAY_AFTER_LOOT_TIME_MIN": 20.0,
+        "STAY_AFTER_LOOT_TIME_MAX": 40.0,
+        "USE_REAL_LOOTING": true,
+        "DEAD_BODY_DROP_ITEM_PROBABILITY": 50.0
       },
       "Hearing": {
         "BOT_CLOSE_PANIC_DIST": 1.0,
@@ -484,14 +503,17 @@
         "ENEMY_BY_GROUPS_PMC_PLAYERS": true,
         "ENEMY_BY_GROUPS_SAVAGE_PLAYERS": false,
         "BOSS_IGNORE_LOYALTY": true,
-        "DEFAULT_BEAR_BEHAVIOUR": "Warn, Attack",
-        "DEFAULT_USEC_BEHAVIOUR": "Warn, Attack",
-        "DEFAULT_SAVAGE_BEHAVIOUR": "Warn, Attack",
+        "DEFAULT_BEAR_BEHAVIOUR": "Warn, AlwaysEnemies",
+        "DEFAULT_USEC_BEHAVIOUR": "Warn, AlwaysEnemies",
+        "DEFAULT_SAVAGE_BEHAVIOUR": "Warn, AlwaysEnemies",
         "FRIENDLY_BOT_TYPES": [
           "exUsec"
         ],
         "WARN_BOT_TYPES": [],
-        "ENEMY_BOT_TYPES": [],
+        "ENEMY_BOT_TYPES": [
+          "pmcBEAR",
+          "pmcUSEC"
+        ],
         "REVENGE_BOT_TYPES": [
           "exUsec",
           "gifter",
@@ -591,7 +613,11 @@
         "SNIPER_FIRE_IMMUNE": false,
         "USE_ADD_TO_ENEMY_VALIDATION": false,
         "VALID_REASONS_TO_ADD_ENEMY": null,
-        "CHECK_MARK_OF_UNKNOWS": false
+        "CHECK_MARK_OF_UNKNOWS": false,
+        "SDIST_TO_DELIVER_INFO_WHEN_ENEMY": 14400.0,
+        "TRIPWIRE_INERT_TIME": 1200,
+        "CHANCE_TO_IGNORE_TRIPWIRE": 0.0,
+        "CHACE_TO_DEACTIVATE": 100.0
       },
       "Boss": {
         "BOSS_DIST_TO_WARNING": 40.0,
@@ -629,6 +655,7 @@
         "WARN_PLAYER_PERIOD": 15.0,
         "EFFECT_REGENERATION_PER_MIN": 0.0,
         "EFFECT_PAINKILLER": true,
+        "DISABLE_METABOLISM": true,
         "KILLA_Y_DELTA_TO_BE_ENEMY_BOSS": 5.0,
         "KILLA_DITANCE_TO_BE_ENEMY_BOSS": 45.0,
         "KILLA_START_SEARCH_SEC": 40.0,
@@ -802,7 +829,8 @@
         "DAMAGE_TIME_TO_GETUP": 3,
         "SHALL_GETUP_ON_ROTATE": true,
         "SHALL_LAY_WITHOUT_CHECK": false,
-        "IF_NO_ENEMY": true
+        "IF_NO_ENEMY": true,
+        "SHALL_LAY_PROBABILTY_WHEN_ARTILLERY": 0
       },
       "Aiming": {
         "MAX_AIM_PRECICING": 2.0,
@@ -863,7 +891,8 @@
         "BAD_SHOOTS_MAX": 0,
         "BAD_SHOOTS_OFFSET": 1.0,
         "BAD_SHOOTS_MAIN_COEF": 1.0,
-        "START_TIME_COEF": 1.0
+        "START_TIME_COEF": 1.0,
+        "AIMING_ON_WAY": 50.0
       },
       "Look": {
         "OLD_TIME_POINT": 11.0,
@@ -918,7 +947,8 @@
         "SHOOT_FROM_EYES": true,
         "ANGLE_FOR_GETUP": 60.0,
         "MINIMUM_VISIBLE_DIST": 40.0,
-        "CAN_USE_STRIBOSCOPE": -1.0
+        "CAN_USE_STRIBOSCOPE": -1.0,
+        "LOOK_TO_ENEMY_TIME": 40.0
       },
       "Shoot": {
         "RECOIL_TIME_NORMALIZE": 1.0,
@@ -930,6 +960,10 @@
         "WAIT_NEXT_STATIONARY_GRENADE": 0.3,
         "WAIT_NEXT_SINGLE_SHOT_LONG_MAX": 3.3,
         "WAIT_NEXT_SINGLE_SHOT_LONG_MIN": 0.4,
+        "NEXT_SINGLE_SHOT_PAUSE": 5.0,
+        "SINGLE_SHOT_SERIES_TIME_MIN": 9.0,
+        "SINGLE_SHOT_SERIES_TIME_MAX": 11.0,
+        "USE_SINGLE_SHOT_SERIES": false,
         "MARKSMAN_DIST_SEK_COEF": 44.0,
         "FINGER_HOLD_SINGLE_SHOT": 0.14,
         "FINGER_HOLD_STATIONARY_BULLET": 0.14,
@@ -971,6 +1005,7 @@
         "DELAY_BEFORE_EXAMINE_MALFUNCTION": 0.5,
         "DELAY_BEFORE_FIX_MALFUNCTION": 0.5,
         "TRY_CHANGE_WEAPON_INSTEAD_RELOAD": false,
+        "MELEE_ATTACK_ZIG_ZAG": false,
         "MIN_DIST_TO_ENEMY_TO_CHANGE_WEAPON_INSTEAD_RELOAD": 30.0,
         "CHANCE_TO_CHANGE_WEAPON_INSTEAD_RELOAD": 60.0,
         "CHANCE_TO_CHANGE_WEAPON_INSTEAD_RELOAD_ENEMY_WITHOUT_HELM": 90.0,
@@ -1017,7 +1052,11 @@
         "FIRST_TURN_SPEED": 160.0,
         "FIRST_TURN_BIG_SPEED": 320.0,
         "TURN_SPEED_ON_SPRINT": 200.0,
-        "NO_ZIG_ZAG": false
+        "NO_ZIG_ZAG": false,
+        "CAN_SPRINT_GO_TO_SOME_POINT": true,
+        "DIST_SPRINT_GO_TO_SOME_POINT": 5.0,
+        "MELEE_ATTACK_ZIG_ZAG": false,
+        "MELEE_ATTACK_OPTIMIZE": false
       },
       "Grenade": {
         "DELTA_NEXT_ATTEMPT_FROM_COVER": 5.0,
@@ -1054,6 +1093,7 @@
         "NO_RUN_FROM_AI_GRENADES": true,
         "MAX_THROW_POWER": 25.0,
         "GrenadePrecision": 0.05,
+        "GRENADE_PRECISION_PORTALS": 0.01,
         "STOP_WHEN_THROW_GRENADE": true,
         "WAIT_TIME_TURN_AWAY": 1.2,
         "SMOKE_SUPPRESS_DELTA": 20.0,
@@ -1068,7 +1108,8 @@
         "FIRST_TIME_SEEN_DELTA_CAN_THROW": 0.0,
         "SHALL_GETUP": true,
         "CAN_LAY": false,
-        "IGNORE_SMOKE_GRENADE": false
+        "IGNORE_SMOKE_GRENADE": false,
+        "CAN_THROW_FROM_ANY_PLACE": true
       },
       "Change": {
         "SMOKE_VISION_DIST": 0.6,
@@ -1186,11 +1227,12 @@
         "CHANCE_TO_PLAY_GESTURE_WHEN_CLOSE": 50.0,
         "HEAD_TURN_SPEED": 41.0,
         "HEAD_ANG_ROTATE": 25.0,
+        "LOOT_PATROL_POTENTIAL_CLUSTERS_AMOUNT": 1,
         "CHANCE_TO_PLAY_VOICE_WHEN_CLOSE": 50.0,
         "GO_TO_NEXT_POINT_DELTA": 90.0,
         "GO_TO_NEXT_POINT_DELTA_RESERV_WAY": 15.0,
-        "DEAD_BODY_SEE_DIST": 20.0,
-        "DEAD_BODY_LEAVE_DIST": 50.0,
+        "DEAD_BODY_SEE_DIST": 50.0,
+        "DEAD_BODY_LEAVE_DIST": 70.0,
         "CAN_LOOK_TO_DEADBODIES": false,
         "GESTURE_LENGTH": 2.0,
         "SHALL_STOP_IN_PEACEFUL_ACTION": false,
@@ -1216,7 +1258,11 @@
         "TRY_CHOOSE_RESERV_WAY_ON_START": false,
         "CAN_CHECK_MAGAZINE": false,
         "PICKUP_ITEMS_TO_BACKPACK_OR_CONTAINER": false,
-        "DO_RANDOM_DROP_ITEM": false
+        "DO_RANDOM_DROP_ITEM": false,
+        "STAY_AFTER_LOOT_TIME_MIN": 20.0,
+        "STAY_AFTER_LOOT_TIME_MAX": 40.0,
+        "USE_REAL_LOOTING": true,
+        "DEAD_BODY_DROP_ITEM_PROBABILITY": 50.0
       },
       "Hearing": {
         "BOT_CLOSE_PANIC_DIST": 1.0,
@@ -1255,14 +1301,17 @@
         "ENEMY_BY_GROUPS_PMC_PLAYERS": true,
         "ENEMY_BY_GROUPS_SAVAGE_PLAYERS": false,
         "BOSS_IGNORE_LOYALTY": true,
-        "DEFAULT_BEAR_BEHAVIOUR": "Warn, Attack",
-        "DEFAULT_USEC_BEHAVIOUR": "Warn, Attack",
-        "DEFAULT_SAVAGE_BEHAVIOUR": "Warn, Attack",
+        "DEFAULT_BEAR_BEHAVIOUR": "Warn, AlwaysEnemies",
+        "DEFAULT_USEC_BEHAVIOUR": "Warn, AlwaysEnemies",
+        "DEFAULT_SAVAGE_BEHAVIOUR": "Warn, AlwaysEnemies",
         "FRIENDLY_BOT_TYPES": [
           "exUsec"
         ],
         "WARN_BOT_TYPES": [],
-        "ENEMY_BOT_TYPES": [],
+        "ENEMY_BOT_TYPES": [
+          "pmcBEAR",
+          "pmcUSEC"
+        ],
         "REVENGE_BOT_TYPES": [
           "exUsec",
           "gifter",
@@ -1362,7 +1411,11 @@
         "SNIPER_FIRE_IMMUNE": false,
         "USE_ADD_TO_ENEMY_VALIDATION": false,
         "VALID_REASONS_TO_ADD_ENEMY": null,
-        "CHECK_MARK_OF_UNKNOWS": false
+        "CHECK_MARK_OF_UNKNOWS": false,
+        "SDIST_TO_DELIVER_INFO_WHEN_ENEMY": 14400.0,
+        "TRIPWIRE_INERT_TIME": 1200,
+        "CHANCE_TO_IGNORE_TRIPWIRE": 0.0,
+        "CHACE_TO_DEACTIVATE": 100.0
       },
       "Boss": {
         "BOSS_DIST_TO_WARNING": 40.0,
@@ -1400,6 +1453,7 @@
         "WARN_PLAYER_PERIOD": 15.0,
         "EFFECT_REGENERATION_PER_MIN": 0.0,
         "EFFECT_PAINKILLER": true,
+        "DISABLE_METABOLISM": true,
         "KILLA_Y_DELTA_TO_BE_ENEMY_BOSS": 5.0,
         "KILLA_DITANCE_TO_BE_ENEMY_BOSS": 45.0,
         "KILLA_START_SEARCH_SEC": 40.0,
@@ -1573,7 +1627,8 @@
         "DAMAGE_TIME_TO_GETUP": 3,
         "SHALL_GETUP_ON_ROTATE": true,
         "SHALL_LAY_WITHOUT_CHECK": false,
-        "IF_NO_ENEMY": true
+        "IF_NO_ENEMY": true,
+        "SHALL_LAY_PROBABILTY_WHEN_ARTILLERY": 0
       },
       "Aiming": {
         "MAX_AIM_PRECICING": 2.0,
@@ -1634,7 +1689,8 @@
         "BAD_SHOOTS_MAX": 0,
         "BAD_SHOOTS_OFFSET": 1.0,
         "BAD_SHOOTS_MAIN_COEF": 1.0,
-        "START_TIME_COEF": 1.0
+        "START_TIME_COEF": 1.0,
+        "AIMING_ON_WAY": 50.0
       },
       "Look": {
         "OLD_TIME_POINT": 11.0,
@@ -1689,7 +1745,8 @@
         "SHOOT_FROM_EYES": true,
         "ANGLE_FOR_GETUP": 60.0,
         "MINIMUM_VISIBLE_DIST": 40.0,
-        "CAN_USE_STRIBOSCOPE": -1.0
+        "CAN_USE_STRIBOSCOPE": -1.0,
+        "LOOK_TO_ENEMY_TIME": 40.0
       },
       "Shoot": {
         "RECOIL_TIME_NORMALIZE": 1.0,
@@ -1701,6 +1758,10 @@
         "WAIT_NEXT_STATIONARY_GRENADE": 0.3,
         "WAIT_NEXT_SINGLE_SHOT_LONG_MAX": 3.3,
         "WAIT_NEXT_SINGLE_SHOT_LONG_MIN": 0.4,
+        "NEXT_SINGLE_SHOT_PAUSE": 5.0,
+        "SINGLE_SHOT_SERIES_TIME_MIN": 9.0,
+        "SINGLE_SHOT_SERIES_TIME_MAX": 11.0,
+        "USE_SINGLE_SHOT_SERIES": false,
         "MARKSMAN_DIST_SEK_COEF": 44.0,
         "FINGER_HOLD_SINGLE_SHOT": 0.14,
         "FINGER_HOLD_STATIONARY_BULLET": 0.14,
@@ -1742,6 +1803,7 @@
         "DELAY_BEFORE_EXAMINE_MALFUNCTION": 0.5,
         "DELAY_BEFORE_FIX_MALFUNCTION": 0.5,
         "TRY_CHANGE_WEAPON_INSTEAD_RELOAD": false,
+        "MELEE_ATTACK_ZIG_ZAG": false,
         "MIN_DIST_TO_ENEMY_TO_CHANGE_WEAPON_INSTEAD_RELOAD": 30.0,
         "CHANCE_TO_CHANGE_WEAPON_INSTEAD_RELOAD": 60.0,
         "CHANCE_TO_CHANGE_WEAPON_INSTEAD_RELOAD_ENEMY_WITHOUT_HELM": 90.0,
@@ -1788,7 +1850,11 @@
         "FIRST_TURN_SPEED": 160.0,
         "FIRST_TURN_BIG_SPEED": 320.0,
         "TURN_SPEED_ON_SPRINT": 200.0,
-        "NO_ZIG_ZAG": false
+        "NO_ZIG_ZAG": false,
+        "CAN_SPRINT_GO_TO_SOME_POINT": true,
+        "DIST_SPRINT_GO_TO_SOME_POINT": 5.0,
+        "MELEE_ATTACK_ZIG_ZAG": false,
+        "MELEE_ATTACK_OPTIMIZE": false
       },
       "Grenade": {
         "DELTA_NEXT_ATTEMPT_FROM_COVER": 5.0,
@@ -1825,6 +1891,7 @@
         "NO_RUN_FROM_AI_GRENADES": true,
         "MAX_THROW_POWER": 25.0,
         "GrenadePrecision": 0.05,
+        "GRENADE_PRECISION_PORTALS": 0.01,
         "STOP_WHEN_THROW_GRENADE": true,
         "WAIT_TIME_TURN_AWAY": 1.2,
         "SMOKE_SUPPRESS_DELTA": 20.0,
@@ -1839,7 +1906,8 @@
         "FIRST_TIME_SEEN_DELTA_CAN_THROW": 0.0,
         "SHALL_GETUP": true,
         "CAN_LAY": false,
-        "IGNORE_SMOKE_GRENADE": false
+        "IGNORE_SMOKE_GRENADE": false,
+        "CAN_THROW_FROM_ANY_PLACE": true
       },
       "Change": {
         "SMOKE_VISION_DIST": 0.6,
@@ -1957,11 +2025,12 @@
         "CHANCE_TO_PLAY_GESTURE_WHEN_CLOSE": 50.0,
         "HEAD_TURN_SPEED": 41.0,
         "HEAD_ANG_ROTATE": 25.0,
+        "LOOT_PATROL_POTENTIAL_CLUSTERS_AMOUNT": 1,
         "CHANCE_TO_PLAY_VOICE_WHEN_CLOSE": 50.0,
         "GO_TO_NEXT_POINT_DELTA": 90.0,
         "GO_TO_NEXT_POINT_DELTA_RESERV_WAY": 15.0,
-        "DEAD_BODY_SEE_DIST": 20.0,
-        "DEAD_BODY_LEAVE_DIST": 50.0,
+        "DEAD_BODY_SEE_DIST": 50.0,
+        "DEAD_BODY_LEAVE_DIST": 70.0,
         "CAN_LOOK_TO_DEADBODIES": false,
         "GESTURE_LENGTH": 2.0,
         "SHALL_STOP_IN_PEACEFUL_ACTION": false,
@@ -1987,7 +2056,11 @@
         "TRY_CHOOSE_RESERV_WAY_ON_START": false,
         "CAN_CHECK_MAGAZINE": false,
         "PICKUP_ITEMS_TO_BACKPACK_OR_CONTAINER": false,
-        "DO_RANDOM_DROP_ITEM": false
+        "DO_RANDOM_DROP_ITEM": false,
+        "STAY_AFTER_LOOT_TIME_MIN": 20.0,
+        "STAY_AFTER_LOOT_TIME_MAX": 40.0,
+        "USE_REAL_LOOTING": true,
+        "DEAD_BODY_DROP_ITEM_PROBABILITY": 50.0
       },
       "Hearing": {
         "BOT_CLOSE_PANIC_DIST": 1.0,
@@ -2026,14 +2099,17 @@
         "ENEMY_BY_GROUPS_PMC_PLAYERS": true,
         "ENEMY_BY_GROUPS_SAVAGE_PLAYERS": false,
         "BOSS_IGNORE_LOYALTY": true,
-        "DEFAULT_BEAR_BEHAVIOUR": "Warn, Attack",
-        "DEFAULT_USEC_BEHAVIOUR": "Warn, Attack",
-        "DEFAULT_SAVAGE_BEHAVIOUR": "Warn, Attack",
+        "DEFAULT_BEAR_BEHAVIOUR": "Warn, AlwaysEnemies",
+        "DEFAULT_USEC_BEHAVIOUR": "Warn, AlwaysEnemies",
+        "DEFAULT_SAVAGE_BEHAVIOUR": "Warn, AlwaysEnemies",
         "FRIENDLY_BOT_TYPES": [
           "exUsec"
         ],
         "WARN_BOT_TYPES": [],
-        "ENEMY_BOT_TYPES": [],
+        "ENEMY_BOT_TYPES": [
+          "pmcBEAR",
+          "pmcUSEC"
+        ],
         "REVENGE_BOT_TYPES": [
           "exUsec",
           "gifter",
@@ -2133,7 +2209,11 @@
         "SNIPER_FIRE_IMMUNE": false,
         "USE_ADD_TO_ENEMY_VALIDATION": false,
         "VALID_REASONS_TO_ADD_ENEMY": null,
-        "CHECK_MARK_OF_UNKNOWS": false
+        "CHECK_MARK_OF_UNKNOWS": false,
+        "SDIST_TO_DELIVER_INFO_WHEN_ENEMY": 14400.0,
+        "TRIPWIRE_INERT_TIME": 1200,
+        "CHANCE_TO_IGNORE_TRIPWIRE": 0.0,
+        "CHACE_TO_DEACTIVATE": 100.0
       },
       "Boss": {
         "BOSS_DIST_TO_WARNING": 40.0,
@@ -2171,6 +2251,7 @@
         "WARN_PLAYER_PERIOD": 15.0,
         "EFFECT_REGENERATION_PER_MIN": 0.0,
         "EFFECT_PAINKILLER": true,
+        "DISABLE_METABOLISM": true,
         "KILLA_Y_DELTA_TO_BE_ENEMY_BOSS": 5.0,
         "KILLA_DITANCE_TO_BE_ENEMY_BOSS": 45.0,
         "KILLA_START_SEARCH_SEC": 40.0,
@@ -2344,7 +2425,8 @@
         "DAMAGE_TIME_TO_GETUP": 3,
         "SHALL_GETUP_ON_ROTATE": true,
         "SHALL_LAY_WITHOUT_CHECK": false,
-        "IF_NO_ENEMY": true
+        "IF_NO_ENEMY": true,
+        "SHALL_LAY_PROBABILTY_WHEN_ARTILLERY": 0
       },
       "Aiming": {
         "MAX_AIM_PRECICING": 2.0,
@@ -2405,7 +2487,8 @@
         "BAD_SHOOTS_MAX": 0,
         "BAD_SHOOTS_OFFSET": 1.0,
         "BAD_SHOOTS_MAIN_COEF": 1.0,
-        "START_TIME_COEF": 1.0
+        "START_TIME_COEF": 1.0,
+        "AIMING_ON_WAY": 50.0
       },
       "Look": {
         "OLD_TIME_POINT": 11.0,
@@ -2460,7 +2543,8 @@
         "SHOOT_FROM_EYES": true,
         "ANGLE_FOR_GETUP": 60.0,
         "MINIMUM_VISIBLE_DIST": 40.0,
-        "CAN_USE_STRIBOSCOPE": -1.0
+        "CAN_USE_STRIBOSCOPE": -1.0,
+        "LOOK_TO_ENEMY_TIME": 40.0
       },
       "Shoot": {
         "RECOIL_TIME_NORMALIZE": 1.0,
@@ -2472,6 +2556,10 @@
         "WAIT_NEXT_STATIONARY_GRENADE": 0.3,
         "WAIT_NEXT_SINGLE_SHOT_LONG_MAX": 3.3,
         "WAIT_NEXT_SINGLE_SHOT_LONG_MIN": 0.4,
+        "NEXT_SINGLE_SHOT_PAUSE": 5.0,
+        "SINGLE_SHOT_SERIES_TIME_MIN": 9.0,
+        "SINGLE_SHOT_SERIES_TIME_MAX": 11.0,
+        "USE_SINGLE_SHOT_SERIES": false,
         "MARKSMAN_DIST_SEK_COEF": 44.0,
         "FINGER_HOLD_SINGLE_SHOT": 0.14,
         "FINGER_HOLD_STATIONARY_BULLET": 0.14,
@@ -2513,6 +2601,7 @@
         "DELAY_BEFORE_EXAMINE_MALFUNCTION": 0.5,
         "DELAY_BEFORE_FIX_MALFUNCTION": 0.5,
         "TRY_CHANGE_WEAPON_INSTEAD_RELOAD": false,
+        "MELEE_ATTACK_ZIG_ZAG": false,
         "MIN_DIST_TO_ENEMY_TO_CHANGE_WEAPON_INSTEAD_RELOAD": 30.0,
         "CHANCE_TO_CHANGE_WEAPON_INSTEAD_RELOAD": 60.0,
         "CHANCE_TO_CHANGE_WEAPON_INSTEAD_RELOAD_ENEMY_WITHOUT_HELM": 90.0,
@@ -2559,7 +2648,11 @@
         "FIRST_TURN_SPEED": 160.0,
         "FIRST_TURN_BIG_SPEED": 320.0,
         "TURN_SPEED_ON_SPRINT": 200.0,
-        "NO_ZIG_ZAG": false
+        "NO_ZIG_ZAG": false,
+        "CAN_SPRINT_GO_TO_SOME_POINT": true,
+        "DIST_SPRINT_GO_TO_SOME_POINT": 5.0,
+        "MELEE_ATTACK_ZIG_ZAG": false,
+        "MELEE_ATTACK_OPTIMIZE": false
       },
       "Grenade": {
         "DELTA_NEXT_ATTEMPT_FROM_COVER": 5.0,
@@ -2596,6 +2689,7 @@
         "NO_RUN_FROM_AI_GRENADES": true,
         "MAX_THROW_POWER": 25.0,
         "GrenadePrecision": 0.05,
+        "GRENADE_PRECISION_PORTALS": 0.01,
         "STOP_WHEN_THROW_GRENADE": true,
         "WAIT_TIME_TURN_AWAY": 1.2,
         "SMOKE_SUPPRESS_DELTA": 20.0,
@@ -2610,7 +2704,8 @@
         "FIRST_TIME_SEEN_DELTA_CAN_THROW": 0.0,
         "SHALL_GETUP": true,
         "CAN_LAY": false,
-        "IGNORE_SMOKE_GRENADE": false
+        "IGNORE_SMOKE_GRENADE": false,
+        "CAN_THROW_FROM_ANY_PLACE": true
       },
       "Change": {
         "SMOKE_VISION_DIST": 0.6,
@@ -2728,11 +2823,12 @@
         "CHANCE_TO_PLAY_GESTURE_WHEN_CLOSE": 50.0,
         "HEAD_TURN_SPEED": 41.0,
         "HEAD_ANG_ROTATE": 25.0,
+        "LOOT_PATROL_POTENTIAL_CLUSTERS_AMOUNT": 1,
         "CHANCE_TO_PLAY_VOICE_WHEN_CLOSE": 50.0,
         "GO_TO_NEXT_POINT_DELTA": 90.0,
         "GO_TO_NEXT_POINT_DELTA_RESERV_WAY": 15.0,
-        "DEAD_BODY_SEE_DIST": 20.0,
-        "DEAD_BODY_LEAVE_DIST": 50.0,
+        "DEAD_BODY_SEE_DIST": 50.0,
+        "DEAD_BODY_LEAVE_DIST": 70.0,
         "CAN_LOOK_TO_DEADBODIES": false,
         "GESTURE_LENGTH": 2.0,
         "SHALL_STOP_IN_PEACEFUL_ACTION": false,
@@ -2758,7 +2854,11 @@
         "TRY_CHOOSE_RESERV_WAY_ON_START": false,
         "CAN_CHECK_MAGAZINE": false,
         "PICKUP_ITEMS_TO_BACKPACK_OR_CONTAINER": false,
-        "DO_RANDOM_DROP_ITEM": false
+        "DO_RANDOM_DROP_ITEM": false,
+        "STAY_AFTER_LOOT_TIME_MIN": 20.0,
+        "STAY_AFTER_LOOT_TIME_MAX": 40.0,
+        "USE_REAL_LOOTING": true,
+        "DEAD_BODY_DROP_ITEM_PROBABILITY": 50.0
       },
       "Hearing": {
         "BOT_CLOSE_PANIC_DIST": 1.0,
@@ -2797,14 +2897,17 @@
         "ENEMY_BY_GROUPS_PMC_PLAYERS": true,
         "ENEMY_BY_GROUPS_SAVAGE_PLAYERS": false,
         "BOSS_IGNORE_LOYALTY": true,
-        "DEFAULT_BEAR_BEHAVIOUR": "Warn, Attack",
-        "DEFAULT_USEC_BEHAVIOUR": "Warn, Attack",
-        "DEFAULT_SAVAGE_BEHAVIOUR": "Warn, Attack",
+        "DEFAULT_BEAR_BEHAVIOUR": "Warn, AlwaysEnemies",
+        "DEFAULT_USEC_BEHAVIOUR": "Warn, AlwaysEnemies",
+        "DEFAULT_SAVAGE_BEHAVIOUR": "Warn, AlwaysEnemies",
         "FRIENDLY_BOT_TYPES": [
           "exUsec"
         ],
         "WARN_BOT_TYPES": [],
-        "ENEMY_BOT_TYPES": [],
+        "ENEMY_BOT_TYPES": [
+          "pmcBEAR",
+          "pmcUSEC"
+        ],
         "REVENGE_BOT_TYPES": [
           "exUsec",
           "gifter",
@@ -2904,7 +3007,11 @@
         "SNIPER_FIRE_IMMUNE": false,
         "USE_ADD_TO_ENEMY_VALIDATION": false,
         "VALID_REASONS_TO_ADD_ENEMY": null,
-        "CHECK_MARK_OF_UNKNOWS": false
+        "CHECK_MARK_OF_UNKNOWS": false,
+        "SDIST_TO_DELIVER_INFO_WHEN_ENEMY": 14400.0,
+        "TRIPWIRE_INERT_TIME": 1200,
+        "CHANCE_TO_IGNORE_TRIPWIRE": 0.0,
+        "CHACE_TO_DEACTIVATE": 100.0
       },
       "Boss": {
         "BOSS_DIST_TO_WARNING": 40.0,
@@ -2942,6 +3049,7 @@
         "WARN_PLAYER_PERIOD": 15.0,
         "EFFECT_REGENERATION_PER_MIN": 0.0,
         "EFFECT_PAINKILLER": true,
+        "DISABLE_METABOLISM": true,
         "KILLA_Y_DELTA_TO_BE_ENEMY_BOSS": 5.0,
         "KILLA_DITANCE_TO_BE_ENEMY_BOSS": 45.0,
         "KILLA_START_SEARCH_SEC": 40.0,

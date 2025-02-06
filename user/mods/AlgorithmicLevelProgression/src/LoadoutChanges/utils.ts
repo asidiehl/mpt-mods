@@ -2,22 +2,23 @@ import { ICustomizationItem } from "@spt/models/eft/common/tables/ICustomization
 import { ITemplateItem } from "@spt/models/eft/common/tables/ITemplateItem";
 import { ISuit } from "@spt/models/eft/common/tables/ITrader";
 import {
-  EquipmentFilterDetails,
+  IEquipmentFilterDetails,
   EquipmentFilters,
   IBotConfig,
-  RandomisationDetails,
-  WeightingAdjustmentDetails,
+  IRandomisationDetails,
+  IWeightingAdjustmentDetails,
 } from "@spt/models/spt/config/IBotConfig";
 
 import advancedConfig from "../../config/advancedConfig.json";
 import config, { levelRange } from "../../config/config.json";
 import { MinMax } from "../../types/models/common/MinMax";
 import {
-  Appearance,
-  Inventory,
-  Mods,
+  IAppearance,
+  IInventory,
+  IMods,
 } from "../../types/models/eft/common/tables/IBotType";
 import InternalBlacklist from "./InternalBlacklist";
+import mappedPresets from "../Constants/mappedPresets.json";
 
 export const saveToFile = (data, filePath) => {
   var fs = require("fs");
@@ -154,7 +155,7 @@ export const addToModsObject = (
 export const addKeysToPockets = (
   traderItems: Set<string>,
   items: Record<string, ITemplateItem>,
-  inventory: Inventory
+  inventory: IInventory
 ) => {
   traderItems.forEach((id) => {
     if (
@@ -187,7 +188,7 @@ export const setupMods = (mods: Record<string, Record<string, string[]>>) => {
   });
 };
 
-export const reduceEquipmentChancesTo1 = (inventory: Inventory) => {
+export const reduceEquipmentChancesTo1 = (inventory: IInventory) => {
   Object.keys(inventory.equipment).forEach((equipType) => {
     Object.keys(inventory.equipment[equipType]).forEach((id) => {
       if (inventory.equipment[equipType][id] !== 0) {
@@ -197,7 +198,7 @@ export const reduceEquipmentChancesTo1 = (inventory: Inventory) => {
   });
 };
 
-export const reduceAmmoChancesTo1 = (inventory: Inventory) => {
+export const reduceAmmoChancesTo1 = (inventory: IInventory) => {
   Object.keys(inventory.Ammo).forEach((caliber) => {
     Object.keys(inventory.Ammo[caliber]).forEach((id) => {
       if (inventory.Ammo[caliber][id] !== 0) {
@@ -300,7 +301,7 @@ export const getHeadwearRating = (
   const hasNvg = !!item._props.Slots.find((slot) => slot._name === "mod_nvg");
 
   if (hasNvg) rating += 2;
-  if (item._props?.BlocksEarpiece) rating *= 0.3;
+  if (item._props?.BlocksEarpiece) rating *= 0.2;
   // console.log(
   //   Math.round(rating * 1.5 - item._props.Weight),
   //   "-",
@@ -396,9 +397,12 @@ export const getBackPackInternalGridValue = ({
       total = total / 6;
     }
   });
-  if (total > 20) total += 20;
+  // if (total > 20) total += 20;
 
-  total = Math.round(total / Weight);
+  total = Math.round(total - Weight) * 5;
+  if (total < 0) total = 1;
+  // console.log(total, _name, Weight);
+
   if (["6034d103ca006d2dca39b3f0", "6038d614d10cbf667352dd44"].includes(_id)) {
     total = Math.round(total * 0.7);
   }
@@ -477,7 +481,7 @@ export const numList = [1, 2, 3, 4, 5];
 
 export const arrSum = (arr: number[]): number => arr.reduce((a, b) => a + b, 0);
 
-export const setupBaseWhiteList = (): EquipmentFilterDetails[] => {
+export const setupBaseWhiteList = (): IEquipmentFilterDetails[] => {
   return numList.map((num) => ({
     levelRange: levelRange[num],
     equipment: {},
@@ -553,29 +557,30 @@ export const setWhitelists = (
   // console.log(JSON.stringify(botConfig.equipment.pmc.whitelist))
 };
 
-export const buildEmptyWeightAdjustments = (): WeightingAdjustmentDetails[] => {
-  return numList.map((num) => ({
-    levelRange: levelRange[num],
-    ammo: {
-      add: {},
-      edit: {},
-    },
-    equipment: {
-      add: {},
-      edit: {},
-    },
-    clothing: {
-      add: {},
-      edit: {},
-    },
-  }));
-};
+export const buildEmptyWeightAdjustments =
+  (): IWeightingAdjustmentDetails[] => {
+    return numList.map((num) => ({
+      levelRange: levelRange[num],
+      ammo: {
+        add: {},
+        edit: {},
+      },
+      equipment: {
+        add: {},
+        edit: {},
+      },
+      clothing: {
+        add: {},
+        edit: {},
+      },
+    }));
+  };
 
 const multiplyAndRound = (num1: number, num2: number): number =>
   Math.round(num1 * num2);
 
 const setWeightItem = (
-  weight: WeightingAdjustmentDetails,
+  weight: IWeightingAdjustmentDetails,
   equipmentType: string,
   id: string,
   rating: number,
@@ -851,7 +856,6 @@ export const setWeightingAdjustments = (
             break;
           case "Headwear":
             const rating = getHeadwearRating(item, items);
-
             setWeightItem(
               weight[index],
               equipmentType,
@@ -876,7 +880,11 @@ export const setWeightingAdjustments = (
               weight[index],
               equipmentType,
               id,
-              item._props.BlocksHeadwear ? 1 : 40,
+              Math.round(
+                (item._props.BlocksHeadwear ? 0.1 : 1) *
+                  (item._props.ExamineExperience || 0) +
+                  (item._props.LootExperience || 0)
+              ),
               tierMultiplier
             );
             break;
@@ -894,7 +902,18 @@ export const setWeightingAdjustments = (
             setWeightItem(weight[index], equipmentType, id, 20, tierMultiplier);
             break;
           case "Scabbard":
-            setWeightItem(weight[index], equipmentType, id, 20, tierMultiplier);
+            setWeightItem(
+              weight[index],
+              equipmentType,
+              id,
+              Math.round(
+                (item._props.StabPenetration || 0) +
+                  (item._props.SlashPenetration || 0) +
+                  (item._props.ExamineExperience || 0) +
+                  (item._props.LootExperience || 0)
+              ),
+              tierMultiplier
+            );
             break;
           case "Eyewear":
             setWeightItem(
@@ -1000,7 +1019,7 @@ export const setWeightingAdjustments = (
 
 export const addAllMedsToInventory = (
   traderList: Set<string>,
-  inventory: Inventory,
+  inventory: IInventory,
   items: Record<string, ITemplateItem>
 ) => {
   traderList.forEach((id) => {
@@ -1051,7 +1070,7 @@ const addRecursive = (
   modId: string,
   items: Record<string, ITemplateItem>,
   weaponId: string,
-  mods: Mods,
+  mods: IMods,
   count = 0
 ) => {
   if (count > 115) return false;
@@ -1079,7 +1098,7 @@ const addRecursive = (
 export const buildOutModsObject = (
   traderList: Set<string>,
   items: Record<string, ITemplateItem>,
-  inventory: Inventory,
+  inventory: IInventory,
   botConfig: IBotConfig
 ) => {
   traderList.forEach((id) => {
@@ -1174,7 +1193,10 @@ export const buildOutModsObject = (
 
   traderList.forEach((id) => {
     const item = items[id];
-    const newModObject = {} as Record<string, string[]>;
+
+    const newModObject = mappedPresets[id]
+      ? mappedPresets[id]
+      : ({} as Record<string, string[]>);
 
     if (
       !inventory.mods[id] &&
@@ -1190,19 +1212,23 @@ export const buildOutModsObject = (
                   handguardParent,
                   gasblockParent,
                 ]) /*gasblockParent,*/:
-                newModObject[mod._name] = [];
+                if (!newModObject[mod._name]) newModObject[mod._name] = [];
                 break;
               // case mod._name?.includes("scope"):
               //     newModObject[mod._name] = mod._props?.filters[0].Filter.filter((_tpl) => siteWhiteList["5447bedf4bdc2d87278b4568"].includes(_tpl))
               // console.log(item._name, newModObject[mod._name])
               default:
-                newModObject[mod._name] = mod._props?.filters[0].Filter.filter(
-                  (_tpl) => !blacklistedItems.has(_tpl)
-                );
+                newModObject[mod._name] = deDupeArr([
+                  ...(newModObject[mod._name] ? newModObject[mod._name] : []),
+                  ...mod._props?.filters[0].Filter.filter(
+                    (_tpl) => !blacklistedItems.has(_tpl)
+                  ),
+                ]);
                 break;
             }
           }
         });
+
         if (Object.keys(newModObject)) {
           inventory.mods[id] = newModObject;
         }
@@ -1218,19 +1244,22 @@ export const buildInitialRandomization = (
   traderList: TradersMasterList,
   lootingBotsDetected: boolean
 ) => {
-  const randomizationItems: RandomisationDetails[] = [];
+  const randomizationItems: IRandomisationDetails[] = [];
+
   numList.forEach((num, index) => {
     const range = levelRange[num];
 
-    const newItem = {
+    const newItem: IRandomisationDetails = {
       levelRange: range,
+      randomisedArmorSlots: ["TacticalVest", "ArmorVest"],
+      randomisedWeaponModSlots: [],
       equipment: {
         Headwear: [75, 85, 99, 99, 99][index],
         Earpiece: [55, 75, 95, 100, 100][index],
         FaceCover: [25, 35, 65, 75, 90][index],
-        ArmorVest: [99, 99, 99, 99, 99][index],
+        ArmorVest: index < 2 ? 100 : 70, // [99, 99, 99, 99, 99][index],
         ArmBand: [25, 45, 59, 69, 80][index],
-        TacticalVest: [96, 96, 99, 99, 99][index],
+        // TacticalVest: [96, 96, 99, 99, 99][index],
         Pockets: [25, 45, 59, 69, 80][index],
         SecondPrimaryWeapon: [0, 0, 0, 0, 5][index],
         SecuredContainer: 100,
@@ -1543,7 +1572,6 @@ export const buildInitialRandomization = (
             : {},
         },
       },
-      randomisedWeaponModSlots: [],
       weaponMods: {
         mod_barrel: [5, 20, 35, 55, 65][index],
         mod_bipod: [1, 10, 5, 11, 50][index],
@@ -1659,17 +1687,13 @@ export const buildInitialRandomization = (
       chanceMaxResourcePercent: 70,
     },
   };
-  // saveToFile(
-  //   botConfig.lootItemResourceRandomization,
-  //   "botConfiglootItemResourceRandomization.json"
-  // );
   botConfig.equipment.pmc["forceStock"] = advancedConfig.forceStock;
   botConfig.equipment.pmc.randomisation = randomizationItems;
   // console.log(JSON.stringify(randomizationItems));
 };
 
 export const buildInitialUsecAppearance = (
-  appearance: Appearance,
+  appearance: IAppearance,
   items: Record<string, ICustomizationItem>
 ) => {
   appearance.feet = {
@@ -1695,7 +1719,7 @@ export const buildInitialUsecAppearance = (
 };
 
 export const buildInitialBearAppearance = (
-  appearance: Appearance,
+  appearance: IAppearance,
   items: Record<string, ICustomizationItem>
 ) => {
   appearance.feet = {
@@ -1727,8 +1751,8 @@ export const buildClothingWeighting = (
   suit: ISuit[],
   items: Record<string, ICustomizationItem>,
   botConfig: IBotConfig,
-  usecAppearance: Appearance,
-  bearAppearance: Appearance
+  usecAppearance: IAppearance,
+  bearAppearance: IAppearance
 ) => {
   buildInitialUsecAppearance(usecAppearance, items);
   buildInitialBearAppearance(bearAppearance, items);
@@ -1891,16 +1915,19 @@ export const buildBlacklist = (
   });
 };
 
-export const deleteBlacklistedItemsFromInventory = (inventory: Inventory) => {
+export const deleteBlacklistedItemsFromInventory = (
+  inventory: IInventory,
+  blacklist: Set<string>
+) => {
   Object.keys(inventory.items).forEach((key) => {
     Object.keys(inventory.items[key]).forEach((id) => {
-      if (blacklistedItems.has(id)) delete inventory.items[key][id];
+      if (blacklist.has(id)) delete inventory.items[key][id];
     });
   });
 
   Object.keys(inventory.Ammo).forEach((calibre) => {
     Object.keys(inventory.Ammo[calibre]).forEach((ammoKey) => {
-      if (blacklistedItems.has(ammoKey)) {
+      if (blacklist.has(ammoKey)) {
         delete inventory.Ammo[calibre][ammoKey];
         // console.log(calibre, ammoKey, inventory.Ammo[calibre][ammoKey]);
       }
@@ -1908,21 +1935,19 @@ export const deleteBlacklistedItemsFromInventory = (inventory: Inventory) => {
   });
 
   Object.keys(inventory.mods).forEach((key) => {
-    if (blacklistedItems.has(key)) {
+    if (blacklist.has(key)) {
       delete inventory.mods[key];
     } else {
       Object.keys(inventory.mods?.[key]).forEach((modtype) => {
         if (inventory.mods[key][modtype]?.length) {
-          inventory.mods[key][modtype].filter(
-            (id) => !blacklistedItems.has(id)
-          );
+          inventory.mods[key][modtype].filter((id) => !blacklist.has(id));
         }
       });
     }
   });
 };
 
-export const ensureAllAmmoInSecuredContainer = (inventory: Inventory) => {
+export const ensureAllAmmoInSecuredContainer = (inventory: IInventory) => {
   const ammo = Object.keys(inventory.Ammo)
     .map((calbr) => Object.keys(inventory.Ammo[calbr]))
     .flat();
@@ -1955,7 +1980,7 @@ export const fixEmptyChancePlates = (botConfig: IBotConfig) => {
   }
 };
 
-export const addBossSecuredContainer = (inventory: Inventory) => {
+export const addBossSecuredContainer = (inventory: IInventory) => {
   inventory.equipment.SecuredContainer = {
     "5c0a794586f77461c458f892": 1,
   };

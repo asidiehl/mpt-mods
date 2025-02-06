@@ -105,6 +105,13 @@
     "BaseBrain": null
   },
   {
+    "Name": "Partisan",
+    "Description": "Crazy mall santa",
+    "Section": "Bosses",
+    "WildSpawnType": "bossPartisan",
+    "BaseBrain": null
+  },
+  {
     "Name": "Rashala",
     "Description": "Customs Boss",
     "Section": "Bosses",
@@ -207,6 +214,20 @@
     "Description": "Streets Boss Follower",
     "Section": "Followers",
     "WildSpawnType": "followerBoar",
+    "BaseBrain": null
+  },
+  {
+    "Name": "Kaban Guard Close 1",
+    "Description": "Streets Boss Follower Close 1",
+    "Section": "Followers",
+    "WildSpawnType": "followerBoarClose1",
+    "BaseBrain": null
+  },
+  {
+    "Name": "Kaban Guard Close 2",
+    "Description": "Streets Boss Follower Close 2",
+    "Section": "Followers",
+    "WildSpawnType": "followerBoarClose2",
     "BaseBrain": null
   },
   {

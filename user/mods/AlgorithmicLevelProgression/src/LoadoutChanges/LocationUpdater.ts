@@ -19,17 +19,33 @@ export const LocationUpdater = (container: DependencyContainer): undefined => {
     `AlgorithmicLevelProgressionMapUpdater`,
     [
       {
-        url: "/client/raid/configuration",
+        url: "/client/match/local/start",
         action: async (_url, info, sessionId, output) => {
           const time = weatherController.generate().time;
 
           const hours = getTime(time, info.timeVariant === "PAST" ? 12 : 0);
-
-          globalValues.setValuesForLocation(info.location.toLowerCase(), hours);
-          if (enableNonPMCBotChanges) {
-            const pmcData = globalValues.profileHelper.getPmcProfile(sessionId);
-            globalValues.updateInventory(pmcData?.Info?.Level || 1);
+          // console.log("hours", hours);
+          try {
+            globalValues.setValuesForLocation(
+              info.location.toLowerCase(),
+              hours
+            );
+            if (enableNonPMCBotChanges) {
+              const pmcData =
+                globalValues.profileHelper.getPmcProfile(sessionId);
+              globalValues.updateInventory(
+                pmcData?.Info?.Level || 1,
+                info.location.toLowerCase()
+              );
+            }
+            console.log("Algorthimic LevelProgression: Loaded");
+          } catch (error) {
+            console.log(
+              `"Algorthimic LevelProgression: failed to make equipment changes.
+                ` + error?.message
+            );
           }
+
           return output;
         },
       },
@@ -43,11 +59,11 @@ export const LocationUpdater = (container: DependencyContainer): undefined => {
     );
 };
 
-function getTime(time: string, hourDiff): number {
-  let [h, m] = time.split(":");
-  // console.log("minutes", m)
-  if (parseInt(h) == 0) {
-    return Number(h);
+function getTime(time: string, hourDiff: number): number {
+  let [hours, minutes] = time.split(":");
+
+  if (hourDiff == 12 && parseInt(hours) >= 12) {
+    return Math.abs(parseInt(hours) - hourDiff);
   }
-  return Number(Math.abs(parseInt(h) - hourDiff));
+  return Math.abs(parseInt(hours) + hourDiff);
 }
