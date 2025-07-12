@@ -61,7 +61,7 @@ class Mod implements IPreSptLoadMod
         );        
     }
 
-	private getItemLowestFleaPrice(templateId: string): number {
+	private getItemLowestFleaPrice(templateId: string) {
 		let offers: IRagfairOffer[] = this.offerService.getOffersOfType(templateId);
 
 		if (offers && offers.length > 0) {

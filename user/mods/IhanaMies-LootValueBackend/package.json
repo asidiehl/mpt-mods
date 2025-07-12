@@ -1,10 +1,10 @@
 {
     "name": "LootValueBackend",
-    "version": "4.0.0",
+    "version": "5.0.0",
     "main": "src/LootValueStaticRouter.js",
     "license": "MIT",
     "author": "IhanaMies",
-    "sptVersion": "~3.10",
+    "sptVersion": "~3.11",
     "scripts": {
         "setup": "npm i",
         "build": "node ./packageBuild.ts"

@@ -13,8 +13,6 @@
     Use "Auto" to disable the mod and let SPT decide the season based on the date
     */
     
-    "SelectedSeason": -1,
+    "SelectedSeason": -1
 
-    // Set to true to extend both Winter and Christmas to cover the 31st of December
-    "SaveChristmas": true
 }

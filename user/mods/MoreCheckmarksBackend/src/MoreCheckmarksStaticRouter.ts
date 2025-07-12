@@ -5,23 +5,25 @@ import type {DynamicRouterModService} from "@spt/services/mod/dynamicRouter/Dyna
 import type {StaticRouterModService} from "@spt/services/mod/staticRouter/StaticRouterModService";
 import { DatabaseServer } from "@spt/servers/DatabaseServer";
 import { ProfileHelper } from "@spt/helpers/ProfileHelper";
-//import { QuestConditionHelper } from "@spt/helpers/QuestConditionHelper";
 import { QuestHelper } from "@spt/helpers/QuestHelper";
 import { IQuestConfig } from "@spt/models/spt/config/IQuestConfig";
 import { ConfigTypes } from "@spt/models/enums/ConfigTypes";
 import { ConfigServer } from "@spt/servers/ConfigServer";
 import { Traders } from "@spt/models/enums/Traders";
 import { TraderHelper } from "@spt/helpers/TraderHelper";
-import { DatabaseServer } from "@spt/servers/DatabaseServer";
 import { FenceService } from "@spt/services/FenceService";
 import { ITemplateItem } from "@spt/models/eft/common/tables/ITemplateItem";
 import { ILocaleBase } from "@spt/models/spt/server/ILocaleBase";
+import {IQuest} from "@spt/models/eft/common/tables/IQuest";
+import {IPmcData} from "@spt/models/eft/common/IPmcData";
+import {ITraderAssort} from "@spt/models/eft/common/tables/ITrader";
+import {IHideoutProduction} from "@spt/models/eft/hideout/IHideoutProduction";
 
 class Mod implements IPreSptLoadMod
 {
     protected questConfig: IQuestConfig;
 	
-    public preSptLoad(container: DependencyContainer): void {
+    public async preSptLoad(container: DependencyContainer): Promise<void> {
         const logger = container.resolve<ILogger>("WinstonLogger");
         const dynamicRouterModService = container.resolve<DynamicRouterModService>("DynamicRouterModService");
         const staticRouterModService = container.resolve<StaticRouterModService>("StaticRouterModService");
@@ -40,7 +42,7 @@ class Mod implements IPreSptLoadMod
             [
                 {
                     url: "/MoreCheckmarksRoutes/quests",
-                    action: (url, info, sessionID, output) => 
+                    action: async (url, info, sessionID, output) =>
                     {
                         logger.info("MoreCheckmarks making quest data request");
 						const quests: IQuest[] = [];
@@ -91,7 +93,7 @@ class Mod implements IPreSptLoadMod
                 },
                 {
                     url: "/MoreCheckmarksRoutes/assorts",
-                    action: (url, info, sessionID, output) => 
+                    action: async (url, info, sessionID, output) =>
                     {
                         logger.info("MoreCheckmarks making trader assort data request");
 						const assorts: ITraderAssort[] = [];
@@ -123,7 +125,7 @@ class Mod implements IPreSptLoadMod
                 },
                 {
                     url: "/MoreCheckmarksRoutes/items",
-                    action: (url, info, sessionID, output) => 
+                    action: async (url, info, sessionID, output) =>
                     {
                         logger.info("MoreCheckmarks making item data request");
 						
@@ -140,10 +142,11 @@ class Mod implements IPreSptLoadMod
                 },
                 {
                     url: "/MoreCheckmarksRoutes/locales",
-                    action: (url, info, sessionID, output) => 
+                    action: async (url, info, sessionID, output) =>
                     {
                         logger.info("MoreCheckmarks making locale request");
-						
+
+						// @ts-ignore
 						const locales: ILocaleBase = {};
 						if(databaseServer && databaseServer.getTables() && databaseServer.getTables().locales)
 						{
@@ -157,10 +160,11 @@ class Mod implements IPreSptLoadMod
                 },
                 {
                     url: "/MoreCheckmarksRoutes/productions",
-                    action: (url, info, sessionID, output) => 
+                    action: async (url, info, sessionID, output) =>
                     {
                         logger.info("MoreCheckmarks making productions request");
 						
+						// @ts-ignore
 						const production: IHideoutProduction = {};
 						if(databaseServer && databaseServer.getTables() && databaseServer.getTables().hideout && databaseServer.getTables().hideout.production)
 						{

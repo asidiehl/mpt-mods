@@ -19,21 +19,25 @@ import type { DatabaseServer } from "@spt/servers/DatabaseServer";
 import type { IDatabaseTables } from "@spt/models/spt/server/IDatabaseTables";
 import type { LocaleService } from "@spt/services/LocaleService";
 import type { QuestHelper } from "@spt/helpers/QuestHelper";
-import type { VFS } from "@spt/utils/VFS";
+import type { FileSystemSync } from "@spt/utils/FileSystemSync";
 import type { HttpResponseUtil } from "@spt/utils/HttpResponseUtil";
 import type { RandomUtil } from "@spt/utils/RandomUtil";
+import type { WeightedRandomHelper } from "@spt/helpers/WeightedRandomHelper";
 import type { BotController } from "@spt/controllers/BotController";
+import type { BotNameService } from "@spt/services/BotNameService";
 import type { BotCallbacks } from "@spt/callbacks/BotCallbacks";
 import type { IGenerateBotsRequestData, ICondition } from "@spt/models/eft/bot/IGenerateBotsRequestData";
-import type { IBotBase } from "@spt/models/eft/common/tables/IBotBase";
+import type { IBotBase, IInfo } from "@spt/models/eft/common/tables/IBotBase";
 
 import { ConfigTypes } from "@spt/models/enums/ConfigTypes";
+import { GameEditions } from "@spt/models/enums/GameEditions";
+import { MemberCategory } from "@spt/models/enums/MemberCategory";
 import type { IBotConfig } from "@spt/models/spt/config/IBotConfig";
 import type { IPmcConfig } from "@spt/models/spt/config/IPmcConfig";
 import type { ILocationConfig } from "@spt/models/spt/config/ILocationConfig";
 
 const modName = "SPTQuestingBots";
-const spawningModNames = ["SWAG", "DewardianDev-MOAR", "PreyToLive-BetterSpawnsPlus", "RealPlayerSpawn"];
+const spawningModNames = ["SWAG", "DewardianDev-MOAR", "PreyToLive-BetterSpawnsPlus", "RealPlayerSpawn", "acidphantasm-botplacementsystem"];
 
 class QuestingBots implements IPreSptLoadMod, IPostSptLoadMod, IPostDBLoadMod
 {
@@ -47,10 +51,12 @@ class QuestingBots implements IPreSptLoadMod, IPostSptLoadMod, IPostDBLoadMod
     private databaseTables: IDatabaseTables;
     private localeService: LocaleService;
     private questHelper: QuestHelper;
-    private vfs: VFS;
+    private fileSystem: FileSystemSync;
     private httpResponseUtil: HttpResponseUtil;
     private randomUtil: RandomUtil;
+    private weightedRandomHelper: WeightedRandomHelper;
     private botController: BotController;
+    private botNameService: BotNameService;
     private iBotConfig: IBotConfig;
     private iPmcConfig: IPmcConfig;
     private iLocationConfig: ILocationConfig;
@@ -63,23 +69,6 @@ class QuestingBots implements IPreSptLoadMod, IPostSptLoadMod, IPostDBLoadMod
         const staticRouterModService = container.resolve<StaticRouterModService>("StaticRouterModService");
         const dynamicRouterModService = container.resolve<DynamicRouterModService>("DynamicRouterModService");
 		
-        // Cache and adjust the PMC conversion chances
-        staticRouterModService.registerStaticRouter(`StaticRaidConfiguration${modName}`,
-            [{
-                url: "/client/game/start",
-                // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-                action: async (url: string, info: any, sessionId: string, output: string) => 
-                {
-                    if (modConfig.bot_spawns.enabled)
-                    {
-                        this.pmcConversionUtil.adjustAllPmcConversionChances(0, false);
-                    }
-
-                    return output;
-                }
-            }], "aki"
-        );
-
         // Get config.json settings for the bepinex plugin
         staticRouterModService.registerStaticRouter(`StaticGetConfig${modName}`,
             [{
@@ -95,22 +84,6 @@ class QuestingBots implements IPreSptLoadMod, IPostSptLoadMod, IPostDBLoadMod
         {
             return;
         }
-
-        // Apply a scalar factor to the SPT-AKI PMC conversion chances
-        dynamicRouterModService.registerDynamicRouter(`DynamicAdjustPMCConversionChances${modName}`,
-            [{
-                url: "/QuestingBots/AdjustPMCConversionChances/",
-                action: async (url: string) => 
-                {
-                    const urlParts = url.split("/");
-                    const factor: number = Number(urlParts[urlParts.length - 2]);
-                    const verify: boolean = JSON.parse(urlParts[urlParts.length - 1].toLowerCase());
-
-                    this.pmcConversionUtil.adjustAllPmcConversionChances(factor, verify);
-                    return JSON.stringify({ resp: "OK" });
-                }
-            }], "AdjustPMCConversionChances"
-        );
 
         // Apply a scalar factor to the SPT-AKI PScav conversion chance
         dynamicRouterModService.registerDynamicRouter(`DynamicAdjustPScavChance${modName}`,
@@ -188,9 +161,9 @@ class QuestingBots implements IPreSptLoadMod, IPostSptLoadMod, IPostDBLoadMod
         // Intercept the EFT bot-generation request to include a PScav conversion chance
         container.afterResolution("BotCallbacks", (_t, result: BotCallbacks) =>
         {
-            result.generateBots = async (url: string, info: IGenerateBotsRequestDataWithPScavChance, sessionID: string) =>
+            result.generateBots = async (url: string, info: IGenerateBotsRequestDataWithPScavForced, sessionID: string) =>
             {
-                const bots = await this.generateBots({ conditions: info.conditions }, sessionID, this.randomUtil.getChance100(info.PScavChance));
+                const bots = await this.generateBots({ conditions: info.conditions }, sessionID, info.GeneratePScav);
                 return this.httpResponseUtil.getBody(bots);
             }
         }, {frequency: "Always"});
@@ -202,10 +175,12 @@ class QuestingBots implements IPreSptLoadMod, IPostSptLoadMod, IPostDBLoadMod
         this.databaseServer = container.resolve<DatabaseServer>("DatabaseServer");
         this.localeService = container.resolve<LocaleService>("LocaleService");
         this.questHelper = container.resolve<QuestHelper>("QuestHelper");
-        this.vfs = container.resolve<VFS>("VFS");
+        this.fileSystem = container.resolve<FileSystemSync>("FileSystemSync");
         this.httpResponseUtil = container.resolve<HttpResponseUtil>("HttpResponseUtil");
         this.randomUtil = container.resolve<RandomUtil>("RandomUtil");
+        this.weightedRandomHelper = container.resolve<WeightedRandomHelper>("WeightedRandomHelper");
         this.botController = container.resolve<BotController>("BotController");
+        this.botNameService = container.resolve<BotNameService>("BotNameService");
 
         this.iBotConfig = this.configServer.getConfig(ConfigTypes.BOT);
         this.iPmcConfig = this.configServer.getConfig(ConfigTypes.PMC);
@@ -213,8 +188,8 @@ class QuestingBots implements IPreSptLoadMod, IPostSptLoadMod, IPostDBLoadMod
 
         this.databaseTables = this.databaseServer.getTables();
         this.commonUtils = new CommonUtils(this.logger, this.databaseTables, this.localeService);
-        this.botUtil = new BotUtil(this.commonUtils, this.databaseTables, this.iLocationConfig, this.iBotConfig);
-        this.pmcConversionUtil = new PMCConversionUtil(this.commonUtils, this.iPmcConfig);
+        this.botUtil = new BotUtil(this.commonUtils, this.databaseTables, this.iLocationConfig, this.iBotConfig, this.iPmcConfig);
+        this.pmcConversionUtil = new PMCConversionUtil(this.commonUtils, this.iPmcConfig, this.iBotConfig);
 
         if (!modConfig.enabled)
         {
@@ -222,6 +197,12 @@ class QuestingBots implements IPreSptLoadMod, IPostSptLoadMod, IPostDBLoadMod
         }
 
         if (!this.doesFileIntegrityCheckPass())
+        {
+            modConfig.enabled = false;
+            return;
+        }
+
+        if (!this.areArraysValid())
         {
             modConfig.enabled = false;
             return;
@@ -239,7 +220,7 @@ class QuestingBots implements IPreSptLoadMod, IPostSptLoadMod, IPostDBLoadMod
         const presptModLoader = container.resolve<PreSptModLoader>("PreSptModLoader");
         
         this.pmcConversionUtil.removeBlacklistedBrainTypes();
-
+        
         // Disable the Questing Bots spawning system if another spawning mod has been loaded
         if (this.shouldDisableSpawningSystem(presptModLoader.getImportedModsNames()))
         {
@@ -272,30 +253,24 @@ class QuestingBots implements IPreSptLoadMod, IPostSptLoadMod, IPostDBLoadMod
         this.botUtil.disablePvEBossWaves();
 
         // Currently these are all PMC waves, which are unnecessary with PMC spawns in this mod
-        this.botUtil.disableCustomBossWaves();
+        this.botUtil.disableBotWaves(this.iLocationConfig.customWaves.boss, "boss")
 
         // Disable all of the extra Scavs that spawn into Factory
-        this.botUtil.disableCustomScavWaves();
+        this.botUtil.disableBotWaves(this.iLocationConfig.customWaves.normal, "Scav");
+
+        // Disable SPT's PMC wave generator
+        this.botUtil.disableBotWaves(this.iPmcConfig.customPmcWaves, "PMC");
+
+        // Use EFT's bot caps instead of SPT's
+        this.botUtil.useEFTBotCaps();
 
         // If Rogues don't spawn immediately, PMC spawns will be significantly delayed
-        if (modConfig.bot_spawns.limit_initial_boss_spawns.disable_rogue_delay)
+        if (modConfig.bot_spawns.limit_initial_boss_spawns.disable_rogue_delay && (this.iLocationConfig.rogueLighthouseSpawnTimeSettings.waitTimeSeconds > -1))
         {
-            this.commonUtils.logInfo("Removing SPT Rogue spawn delay...");
             this.iLocationConfig.rogueLighthouseSpawnTimeSettings.waitTimeSeconds = -1;
+            this.commonUtils.logInfo("Removed SPT Rogue spawn delay");
         }
 
-        if (modConfig.bot_spawns.advanced_eft_bot_count_management.enabled)
-        {
-            this.commonUtils.logInfo("Enabling advanced_eft_bot_count_management will instruct EFT to ignore this mod's PMC's and PScavs when spawning more bots.");
-            this.botUtil.useEFTBotCaps();
-            this.botUtil.modifyNonWaveBotSpawnSettings();
-        }
-
-        if (modConfig.bot_spawns.bot_cap_adjustments.enabled)
-        {
-            this.botUtil.increaseBotCaps();
-        }
-        
         this.commonUtils.logInfo("Configuring game for bot spawning...done.");
     }
 
@@ -308,43 +283,148 @@ class QuestingBots implements IPreSptLoadMod, IPostSptLoadMod, IPostDBLoadMod
             return bots;
         }
 
-        const pmcNames = [
-            ...this.databaseTables.bots.types.usec.firstName,
-            ...this.databaseTables.bots.types.bear.firstName
-        ];
-
         for (const bot in bots)
         {
-            if (info.conditions[0].Role !== "assault")
+            if (bots[bot].Info.Settings.Role !== "assault")
             {
+                this.commonUtils.logDebug(`Tried generating a player Scav, but a bot with role ${bots[bot].Info.Settings.Role} was returned`);
                 continue;
             }
 
-            bots[bot].Info.Nickname = `${bots[bot].Info.Nickname} (${this.randomUtil.getArrayValue(pmcNames)})`
+            this.botNameService.addRandomPmcNameToBotMainProfileNicknameProperty(bots[bot]);
+            this.setRandomisedGameVersionAndCategory(bots[bot].Info);
         }
 
         return bots;
+    }
+
+    private setRandomisedGameVersionAndCategory(botInfo : IInfo) : string
+    {
+        /* SPT CODE - BotGenerator.setRandomisedGameVersionAndCategory(bot.Info) */
+
+        // Special case
+        if (botInfo.Nickname?.toLowerCase() === "nikita")
+        {
+            botInfo.GameVersion = GameEditions.UNHEARD;
+            botInfo.MemberCategory = MemberCategory.DEVELOPER;
+
+            return botInfo.GameVersion;
+        }
+
+        // Choose random weighted game version for bot
+        botInfo.GameVersion = this.weightedRandomHelper.getWeightedValue(this.iPmcConfig.gameVersionWeight);
+
+        // Choose appropriate member category value
+        switch (botInfo.GameVersion) 
+        {
+            case GameEditions.EDGE_OF_DARKNESS:
+                botInfo.MemberCategory = MemberCategory.UNIQUE_ID;
+                break;
+            case GameEditions.UNHEARD:
+                botInfo.MemberCategory = MemberCategory.UNHEARD;
+                break;
+            default:
+                // Everyone else gets a weighted randomised category
+                botInfo.MemberCategory = Number.parseInt(
+                    this.weightedRandomHelper.getWeightedValue(this.iPmcConfig.accountTypeWeight),
+                    10
+                );
+        }
+
+        // Ensure selected category matches
+        botInfo.SelectedMemberCategory = botInfo.MemberCategory;
+
+        return botInfo.GameVersion;
     }
 
     private doesFileIntegrityCheckPass(): boolean
     {
         const path = `${__dirname}/..`;
 
-        if (this.vfs.exists(`${path}/quests/`))
+        if (this.fileSystem.exists(`${path}/quests/`))
         {
             this.commonUtils.logWarning("Found obsolete quests folder 'user\\mods\\DanW-SPTQuestingBots\\quests'. Only quest files in 'BepInEx\\plugins\\DanW-SPTQuestingBots\\quests' will be used.");
         }
 
-        if (this.vfs.exists(`${path}/log/`))
+        if (this.fileSystem.exists(`${path}/log/`))
         {
             this.commonUtils.logWarning("Found obsolete log folder 'user\\mods\\DanW-SPTQuestingBots\\log'. Logs are now saved in 'BepInEx\\plugins\\DanW-SPTQuestingBots\\log'.");
         }
 
-        if (this.vfs.exists(`${path}/../../../BepInEx/plugins/SPTQuestingBots.dll`))
+        if (this.fileSystem.exists(`${path}/../../../BepInEx/plugins/SPTQuestingBots.dll`))
         {
             this.commonUtils.logError("Please remove BepInEx/plugins/SPTQuestingBots.dll from the previous version of this mod and restart the server, or it will NOT work correctly.");
         
             return false;
+        }
+
+        return true;
+    }
+
+    private areArraysValid(): boolean
+    {
+        if (!this.isChanceArrayValid(modConfig.questing.bot_quests.eft_quests.level_range, true))
+        {
+            this.commonUtils.logError("questing.bot_quests.eft_quests.level_range has invalid data. Mod disabled.")
+            return false;
+        }
+
+        if (!this.isChanceArrayValid(modConfig.bot_spawns.pmcs.fraction_of_max_players_vs_raidET, false))
+        {
+            this.commonUtils.logError("bot_spawns.pmcs.fraction_of_max_players_vs_raidET has invalid data. Mod disabled.")
+            return false;
+        }
+
+        if (!this.isChanceArrayValid(modConfig.bot_spawns.pmcs.bots_per_group_distribution, true))
+        {
+            this.commonUtils.logError("bot_spawns.pmcs.bots_per_group_distribution has invalid data. Mod disabled.")
+            return false;
+        }
+        if (!this.isChanceArrayValid(modConfig.bot_spawns.pmcs.bot_difficulty_as_online, true))
+        {
+            this.commonUtils.logError("bot_spawns.pmcs.bot_difficulty_as_online has invalid data. Mod disabled.")
+            return false;
+        }
+        if (!this.isChanceArrayValid(modConfig.bot_spawns.player_scavs.bots_per_group_distribution, true))
+        {
+            this.commonUtils.logError("bot_spawns.player_scavs.bots_per_group_distribution has invalid data. Mod disabled.")
+            return false;
+        }
+        if (!this.isChanceArrayValid(modConfig.bot_spawns.player_scavs.bot_difficulty_as_online, true))
+        {
+            this.commonUtils.logError("bot_spawns.player_scavs.bot_difficulty_as_online has invalid data. Mod disabled.")
+            return false;
+        }
+
+        if (!this.isChanceArrayValid(modConfig.adjust_pscav_chance.chance_vs_time_remaining_fraction, false))
+        {
+            this.commonUtils.logError("adjust_pscav_chance.chance_vs_time_remaining_fraction has invalid data. Mod disabled.")
+            return false;
+        }
+
+        return true;
+    }
+
+    private isChanceArrayValid(array: number[][], shouldLeftColumnBeIntegers: boolean): boolean
+    {
+        if (array.length === 0)
+        {
+            return false;
+        }
+
+        for (const row of array)
+        {
+            if (row.length !== 2)
+            {
+                return false;
+            }
+
+            if (shouldLeftColumnBeIntegers && !Number.isInteger(row[0]))
+            {
+                this.commonUtils.logError("Found a chance array with an invalid value in its left column. Please ensure you are not using an outdated version of config.json.");
+
+                return false;
+            }
         }
 
         return true;
@@ -370,10 +450,10 @@ class QuestingBots implements IPreSptLoadMod, IPostSptLoadMod, IPostDBLoadMod
     }
 }
 
-export interface IGenerateBotsRequestDataWithPScavChance
+export interface IGenerateBotsRequestDataWithPScavForced
 {
     conditions: ICondition[];
-    PScavChance: number;
+    GeneratePScav: boolean;
 }
 
 module.exports = { mod: new QuestingBots() }
