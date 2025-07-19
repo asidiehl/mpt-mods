@@ -16,6 +16,7 @@ This is a collection of mods used for my personal [SPTarkov](https://sp-tarkov.c
 * [Bright Lasers](https://hub.sp-tarkov.com/files/file/1880-brightlasers/) v1.3.0 (Server only)
 * [Loot Value](https://hub.sp-tarkov.com/files/file/1606-lootvalue/) v5.0.2
 * [Looting Bots](https://hub.sp-tarkov.com/files/file/1096-looting-bots/) v1.5.2
+* [ModSync](https://github.com/c-orter/ModSync) v0.11.1
 * [More Checkmarks](https://hub.sp-tarkov.com/files/file/1159-morecheckmarks/) v1.5.17
 * [MPT Server](https://github.com/project-fika/Fika-Server) v2.4.8 (Server only)
 * [MPT.Core](https://github.com/project-fika/Fika-Plugin) v1.2.8
