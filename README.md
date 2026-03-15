@@ -9,7 +9,7 @@ This is a collection of mods used for my personal [SPTarkov](https://sp-tarkov.c
 3. If hosting your own server
    a. Consider using the Docker image [ghcr.io/zhliau/fika-spt-server-docker](https://github.com/zhliau/fika-spt-server-docker/pkgs/container/fika-spt-server-docker) for ease of setup
    b. extract `server.zip` to `user\mods` in your Fika server directory
-4. Run the SPT Launcher, once you've connected to the server you should see `Active Server Mods: 9`
+4. Run the SPT Launcher, once you've connected to the server you should see `Active Server Mods: 8`
 
 ## Mod List - 3.9.2
 
