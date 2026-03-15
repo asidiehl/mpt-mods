@@ -25,7 +25,6 @@ This is a collection of mods used for my personal [SPTarkov](https://sp-tarkov.c
 * [Fika-Plugin](https://github.com/project-fika/Fika-Plugin/) v2.2.3
 * [SAIN](https://forge.sp-tarkov.com/mod/791/sain-solarints-ai-modifications-full-ai-combat-system-replacement/) v4.4.0
 * [Stash Management Helper](https://forge.sp-tarkov.com/mod/1861/stash-management-helper) v0.2.1
-* [Tarkov DLSS 4.5](https://forge.sp-tarkov.com/mod/2621/tarkov-dlss-45) v1.0.0
 * [The Blacklist](https://forge.sp-tarkov.com/mod/755/the-blacklist-flea-market-enhancements) v3.0.1 (Server only)
 * [Waypoints](https://forge.sp-tarkov.com/mod/827/waypoints-expanded-navmesh/) v1.8.1
 * [WikiLinks](https://forge.sp-tarkov.com/mod/2499/wikilinks) v1.0.3
