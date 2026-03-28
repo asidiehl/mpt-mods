@@ -11,7 +11,7 @@ This is a collection of mods used for my personal [SPTarkov](https://sp-tarkov.c
    b. extract `server.zip` to `user\mods` in your Fika server directory
 4. Run the SPT Launcher, once you've connected to the server you should see `Active Server Mods: 8`
 
-## Mod List - 3.9.2
+## Mod List - 4.0.13
 
 * [Air Filter Only Drains In Raid](https://forge.sp-tarkov.com/mod/2532/air-filter-only-drains-in-raid) v1.0.0
 * [BigBrain](https://forge.sp-tarkov.com/mod/902/bigbrain) v1.4.0
@@ -23,6 +23,7 @@ This is a collection of mods used for my personal [SPTarkov](https://sp-tarkov.c
 * [Looting Bots](https://forge.sp-tarkov.com/mod/812/looting-bots/) v1.6.3
 * [Eternal Insurance](https://forge.sp-tarkov.com/mod/2411/eternal-insurance) v1.0.0
 * [Fika-Plugin](https://github.com/project-fika/Fika-Plugin/) v2.2.3
+* [Pulse](https://forge.sp-tarkov.com/mod/2424/pulse) v1.0.3
 * [SAIN](https://forge.sp-tarkov.com/mod/791/sain-solarints-ai-modifications-full-ai-combat-system-replacement/) v4.4.0
 * [Stash Management Helper](https://forge.sp-tarkov.com/mod/1861/stash-management-helper) v0.2.1
 * [The Blacklist](https://forge.sp-tarkov.com/mod/755/the-blacklist-flea-market-enhancements) v3.0.1 (Server only)
