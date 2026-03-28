@@ -13,6 +13,7 @@ This is a collection of mods used for my personal [SPTarkov](https://sp-tarkov.c
 
 ## Mod List - 4.0.13
 
+* [ABPS - Acid's Bot Placement System](https://forge.sp-tarkov.com/mod/2097/abps-acids-bot-placement-system) v2.0.13
 * [Air Filter Only Drains In Raid](https://forge.sp-tarkov.com/mod/2532/air-filter-only-drains-in-raid) v1.0.0
 * [BigBrain](https://forge.sp-tarkov.com/mod/902/bigbrain) v1.4.0
 * [BALL - Better Ammo Loading List](https://forge.sp-tarkov.com/mod/2221/ball-better-ammo-loading-list) v1.1.0
@@ -23,7 +24,6 @@ This is a collection of mods used for my personal [SPTarkov](https://sp-tarkov.c
 * [Looting Bots](https://forge.sp-tarkov.com/mod/812/looting-bots/) v1.6.3
 * [Eternal Insurance](https://forge.sp-tarkov.com/mod/2411/eternal-insurance) v1.0.0
 * [Fika-Plugin](https://github.com/project-fika/Fika-Plugin/) v2.2.3
-* [Pulse](https://forge.sp-tarkov.com/mod/2424/pulse) v1.0.3
 * [SAIN](https://forge.sp-tarkov.com/mod/791/sain-solarints-ai-modifications-full-ai-combat-system-replacement/) v4.4.0
 * [Stash Management Helper](https://forge.sp-tarkov.com/mod/1861/stash-management-helper) v0.2.1
 * [The Blacklist](https://forge.sp-tarkov.com/mod/755/the-blacklist-flea-market-enhancements) v3.0.1 (Server only)
